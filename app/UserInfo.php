@@ -12,10 +12,9 @@ class UserInfo extends Model {
 
     public static function rules($id = 0, $merge = []) {
         return array_merge([
-            'first_name' => 'required',
-            'last_name' => 'required',
+            'first_name' => 'required',           
             'address' => 'required',
-            'phone' => 'numeric',
+            'phone' => 'required',
                 ], $merge);
     }
     public function user() {

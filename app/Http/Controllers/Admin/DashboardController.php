@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\User;
-use App\Item;
+use App\Meal;
 use App\Offer;
 use App\UserInfo;
 use App\Helpers\MyFuncs;
@@ -28,9 +28,9 @@ class DashboardController extends Controller {
      */
     public function index() {
         $user_count = User::count();
-        $item_count = Item::count();
+        $meal_count = Meal::count();
         $offer_count = Offer::count();
-        return view('admin.dashboard.index',compact('user_count','item_count','offer_count'));
+        return view('admin.dashboard.index',compact('user_count','meal_count','offer_count'));
     }
 
     /**
@@ -106,27 +106,39 @@ class DashboardController extends Controller {
         return view('admin.dashboard.profile', compact('user','userinfo'));
     }
 
-    public function postProfile() {
+    public function postProfile(Request $request) {
+        $id = Auth::user()->getId();
+        $data = $request->except(['_method', '_token']);
+
         $location =Input::get('address').', madurai, tamilnadu, india';
         $latlong    =  MyFuncs::lat_long($location);
         $map        =  explode(',' ,$latlong);
         $mapLat     =  $map[0];
         $mapLong    =  $map[1];  
         
-        $id = Auth::user()->getId();
-        $user = User::find($id);
-        $user->email = Input::get('email');
-        $user->save();
-        $userinfo = UserInfo::where('user_id', '=', $id)->first();
-        $userinfo->timestamps = false;        
-        $userinfo->first_name = Input::get('first_name');
-        $userinfo->last_name = Input::get('last_name');
-        $userinfo->phone = Input::get('phone');
-        $userinfo->address = Input::get('address');
-        $userinfo->latitude = $mapLat;
-        $userinfo->longitude = $mapLong;
-        $userinfo->save();
+        $this->validate($request, [          
+            'email'    => 'required|email|unique:users,email,' . ($id ? "$id" : 'NULL') . ',id',
+            'username' => 'required|unique:users,username,' . ($id ? "$id" : 'NULL') . ',id',
+            'first_name' => 'required',         
+            'address' => 'required',
+            'phone' => 'required',
+        ]);
+        
+            $user = User::find($id);
+            $user->email = Input::get('email');
+            $user->save();
+            $userinfo = UserInfo::where('user_id', '=', $id)->first();
+            $userinfo->timestamps = false;        
+            $userinfo->first_name = Input::get('first_name');
+            $userinfo->last_name = Input::get('last_name');
+            $userinfo->phone = Input::get('phone');
+            $userinfo->address = Input::get('address');
+            $userinfo->latitude = $mapLat;
+            $userinfo->longitude = $mapLong;
+            $userinfo->save();
+        Session::flash('flash_message', 'Profile updated successfully!');    
         return redirect('/admin/profile');
+       
     }
     
     public function getChangepassword() {

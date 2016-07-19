@@ -43,9 +43,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     
     public static function rules($id = 0, $merge = []) {
         return array_merge([
-            'email' => 'required|email|unique:users,email,' . ($id ? "$id" : 'NULL') . ',id',
+            'email'    => 'required|email|unique:users,email,' . ($id ? "$id" : 'NULL') . ',id',
             'username' => 'required|unique:users,username,' . ($id ? "$id" : 'NULL') . ',id',
-            'password' => 'required|unique:users,password,' . ($id ? "$id" : 'NULL') . ',id',
+            'password' => 'required',
                 ], $merge);
     }
      public function userinfo()

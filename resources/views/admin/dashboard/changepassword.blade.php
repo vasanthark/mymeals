@@ -11,15 +11,7 @@
             <!-- general form elements -->
             <div class="box box-primary">
                 <!-- form start -->
-                @if (count($errors) > 0)
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif<!-- end .flash-message -->
+                 @include('admin.partials.errors')
                 {!! Form::model( ['role' => 'form']) !!}
                     <div class="box-body">
                         <div class="form-group">
@@ -37,7 +29,7 @@
                     </div><!-- /.box-body -->
 
                     <div class="box-footer">
-                        {!! Form::submit(trans('Submits'), ['class' => 'btn btn-primary']) !!}
+                        {!! Form::submit(trans('Submit'), ['class' => 'btn btn-primary']) !!}
                     </div>
                 {!! Form::close() !!}
             </div><!-- /.box -->

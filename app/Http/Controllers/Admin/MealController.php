@@ -21,7 +21,7 @@ class MealController extends Controller {
      * @return Response
      */
     public function index() {
-        $meals = Meal::all();
+        $meals = Meal::orderBy('meal_date', 'desc')->get();
         return view('admin.meal.index', compact('meals'));
     }
 
@@ -32,7 +32,7 @@ class MealController extends Controller {
      */  
     public function create() {
         $offer = Offer::getOffer();
-        $items = Item::all();
+        $items = Item::orderBy('name', 'asc')->get();
         return view('admin.meal.create', compact('offer','items'));
     }
     /**
@@ -45,9 +45,13 @@ class MealController extends Controller {
         
         $data = $request->all();
         
+        $messages = [
+            'item_id.required' => 'Items required.',
+        ];
         
+        $data['meal_date'] = date('Y-m-d', strtotime($data['meal_date']));
         
-        $validator = Validator::make($data, Meal::rules());
+        $validator = Validator::make($data, Meal::rules(),$messages);
         if ($validator->fails()) {
             return redirect()->back()->withInput()->withErrors($validator->errors());
         }
@@ -61,19 +65,7 @@ class MealController extends Controller {
         $meal->save();
         $meal->item()->attach($data['item_id']);
         $meal->save();
-        
-//        $meal_id = $meal->meal_id;
-//        
-//        $items = $data['item_id'];
-//        foreach($items as $item){
-//            $mealsitem = new MealsItem;
-//            $mealsitem->timestamps = false;
-//            $mealsitem->item_id = $item;
-//            $mealsitem->meal_id = $meal_id;
-//            $mealsitem->save();
-//        }
-        
-        
+       
         Session::flash('flash_message', 'Meal created successfully!');
         return redirect('/admin/meals');
     }
@@ -96,13 +88,14 @@ class MealController extends Controller {
      */
     public function edit($id) {
         $mealsitems = array();
-        $meal = Meal::find($id);
+        $meal    = Meal::find($id);
+        
         $results = MealsItem::where('meal_id', '=', $id)->get();
         foreach($results as $result){
             $mealsitems[] = $result['item_id'];
         }
                        
-        $items = Item::all();
+        $items = Item::orderBy('name', 'asc')->get();
         $offer = Offer::getOffer();
         $mealsdate = date('d-m-Y', strtotime($meal->meal_date));
         return view('admin.meal.edit', compact('meal','mealsdate','offer','mealsitems','items'));
@@ -117,12 +110,13 @@ class MealController extends Controller {
      */
     public function update(Request $request, $id) {
         $data = $request->except(['_method', '_token']);
+        
+        $data['meal_date'] = date('Y-m-d', strtotime($data['meal_date']));
+        
         $validator = Validator::make($data, Meal::rules($id));
         if ($validator->fails()) {
             return redirect()->back()->withInput()->withErrors($validator->errors());
         }
-        
-        
         
         $meal = Meal::find($id);   
         $meal->offer_id = $data['offer_id'];
@@ -130,15 +124,7 @@ class MealController extends Controller {
         $meal->price = $data['price'];
         $meal->meal_date = date('Y-m-d', strtotime($data['meal_date']));
         $meal->status = $data['status'];                
-        
-//        $common_items = array_intersect($data['item_id'], unserialize($data['old_item']));
-//        $new_items = array_diff($data['item_id'],$common_items);
-//        $old_items = array_diff(unserialize($data['old_item']),$common_items);
-        
-//        $new_items = $data['item_id'] + unserialize($data['old_item']);
-//        array_unique($new_items);
-//        $meal->item()->detach($old_items);
-//        $meal->item()->attach($new_items);
+  
         $meal->item()->sync($data['item_id']);
         
         $meal->save();                

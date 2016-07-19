@@ -18,7 +18,7 @@ class ItemController extends Controller {
      * @return Response
      */
     public function index() {
-        $items = Item::all();
+        $items = Item::orderBy('item_id', 'desc')->get();
         return view('admin.item.index', compact('items'));
     }
 

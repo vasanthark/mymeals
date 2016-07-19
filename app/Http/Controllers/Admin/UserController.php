@@ -13,7 +13,7 @@ use Input;
 use DB;
 use Validator;
 use Hash;
-
+use Illuminate\Support\Facades\Redirect;
 
 class UserController extends Controller {
 
@@ -23,7 +23,7 @@ class UserController extends Controller {
      * @return Response
      */
     public function index() {
-        $users = User::all();
+        $users = User::orderBy('id', 'desc')->get();
         return view('admin.user.index', compact('users'));
     }
 
@@ -31,10 +31,11 @@ class UserController extends Controller {
      * Show the form for creating a new resource.
      *
      * @return Response
-     */  
-    public function create() {
+     */
+    public function create() {       
         return view('admin.user.create');
     }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -42,53 +43,46 @@ class UserController extends Controller {
      * @return Response
      */
     public function store(Request $request) {
-        
-        echo 'hi';
-//        print_r($json);
-        exit;
-        
+
         $data = $request->all();
         $validator1 = Validator::make($data, User::rules());
         $validator2 = Validator::make($data, UserInfo::rules());
-        
-        if ($validator1->fails()) {
-            return redirect()->back()->withInput()->withErrors($validator1->errors());
+
+        if ($validator1->passes() and $validator2->passes()) {
+
+            $location = $data['address'] . ', madurai, tamilnadu, india';
+
+            $latlong = MyFuncs::lat_long($location);
+            $map = explode(',', $latlong);
+            $mapLat = $map[0];
+            $mapLong = $map[1];
+
+            $usermodel = new User;
+            $usermodel->username = $data['username'];
+            $usermodel->password = Hash::make($data['password']);
+            $usermodel->email = $data['email'];
+            $usermodel->status = $data['status'];
+            $usermodel->save();
+
+            $userinfo = new UserInfo;
+            $userinfo->timestamps = false;
+            $userinfo->user_id = $usermodel->id;
+            $userinfo->first_name = $data['first_name'];
+            $userinfo->last_name = $data['last_name'];
+            $userinfo->phone = $data['phone'];
+            $userinfo->address = $data['address'];
+            $userinfo->latitude = $mapLat;
+            $userinfo->longitude = $mapLong;
+            $userinfo->save();
+
+
+            Session::flash('flash_message', 'User created successfully!');
+            return redirect('/admin/users');
+        }else{
+            $errors = $validator1->errors(); 
+            $errors->merge($validator2->errors());          
+            return redirect()->back()->withInput()->withErrors($errors);
         }
-        if ($validator2->fails()) {
-            return redirect()->back()->withInput()->withErrors($validator2->errors());
-        }
-        
-        $location =$data['address'].', madurai, tamilnadu, india';
-        
-        
-        
-        
-        $latlong    =  MyFuncs::lat_long($location);
-        $map        =  explode(',' ,$latlong);
-        $mapLat     =  $map[0];
-        $mapLong    =  $map[1];        
-        
-        $usermodel = new User;
-        $usermodel->username = $data['username'];
-        $usermodel->password = Hash::make($data['password']);
-        $usermodel->email = $data['email'];
-        $usermodel->status = $data['status'];        
-        $usermodel->save();
-        
-        $userinfo = new UserInfo;
-        $userinfo->timestamps = false;  
-        $userinfo->user_id = $usermodel->id;
-        $userinfo->first_name = $data['first_name'];
-        $userinfo->last_name = $data['last_name'];
-        $userinfo->phone = $data['phone'];
-        $userinfo->address = $data['address'];
-        $userinfo->latitude = $mapLat;
-        $userinfo->longitude = $mapLong;
-        $userinfo->save();
-        
-        
-        Session::flash('flash_message', 'User created successfully!');
-        return redirect('/admin/users');
     }
 
     /**
@@ -110,7 +104,7 @@ class UserController extends Controller {
     public function edit($id) {
         $user = User::find($id);
         $userinfo = UserInfo::where('user_id', '=', $id)->first();
-        return view('admin.user.edit', compact('user','userinfo'));
+        return view('admin.user.edit', compact('user', 'userinfo'));
     }
 
     /**
@@ -122,28 +116,33 @@ class UserController extends Controller {
      */
     public function update(Request $request, $id) {
         $data = $request->except(['_method', '_token']);
-        
-            $this->validate($request, [
-            'email' => 'required|email',
-            'first_name' => 'required',
-            'last_name' => 'required',
+
+        $this->validate($request, [          
+            'email'    => 'required|email|unique:users,email,' . ($id ? "$id" : 'NULL') . ',id',
+            'username' => 'required|unique:users,username,' . ($id ? "$id" : 'NULL') . ',id',
+            'first_name' => 'required',         
             'address' => 'required',
-            'phone' => 'numeric',
-            ]);
-        
-       $location =$data['address'].', madurai, tamilnadu, india';
-        $latlong    =  MyFuncs::lat_long($location);
-        $map        =  explode(',' ,$latlong);
-        $mapLat     =  $map[0];
-        $mapLong    =  $map[1];        
-        
+            'phone' => 'required',
+        ]);
+
+        $location = $data['address'] . ', madurai, tamilnadu, india';
+        $latlong = MyFuncs::lat_long($location);
+        $map = explode(',', $latlong);
+        $mapLat = $map[0];
+        $mapLong = $map[1];
+
         $usermodel = User::find($id);
-        $usermodel->email = $data['email'];
-        $usermodel->status = $data['status'];        
-        $usermodel->save();
+        $usermodel->username = $data['username'];
         
+        if($data['password']!="")
+        $usermodel->password = Hash::make($data['password']);
+        
+        $usermodel->email = $data['email'];  
+        $usermodel->status = $data['status'];
+        $usermodel->save();
+
         $userinfo = UserInfo::where('user_id', '=', $id)->first();
-        $userinfo->timestamps = false;  
+        $userinfo->timestamps = false;
         $userinfo->user_id = $id;
         $userinfo->first_name = $data['first_name'];
         $userinfo->last_name = $data['last_name'];
@@ -152,26 +151,25 @@ class UserController extends Controller {
         $userinfo->latitude = $mapLat;
         $userinfo->longitude = $mapLong;
         $userinfo->save();
-        
+
         Session::flash('flash_message', 'user updated successfully!');
         return redirect('/admin/users');
-        
     }
 
-      /**
+    /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
      * @return Response
      */
     public function destroy($id) {
-        
+
         // Delete user
-        $user = User::find($id);        
+        $user = User::find($id);
         $userinfo = UserInfo::where('user_id', '=', $id)->first();
         $user->delete();
         $userinfo->delete();
-        Session::flash('flash_message', 'User deleted successfully!');        
+        Session::flash('flash_message', 'User deleted successfully!');
         return redirect('/admin/users');
     }
 

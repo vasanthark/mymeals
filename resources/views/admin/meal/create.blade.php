@@ -17,7 +17,7 @@
 <section class="content">
     
     @include('admin.partials.errors')
-    
+    <?php $existin_post = !empty(old('item_id'))?old('item_id'):array(); ?>
     <div class="row">
         <div class="col-md-12">
             <!-- general form elements -->
@@ -55,7 +55,7 @@
                         <div class="col-sm-5">                            
                             <select class="selectpicker" multiple data-live-search="true" name="item_id[]">
                                 @foreach ($items as $key => $item)
-                                <option value="{{ $item->item_id }}" data-tokens="{{ $item->name }}">{{ $item->name }}</option>
+                                <option value="{{ $item->item_id }}" <?php if(in_array($item->item_id,$existin_post)){ echo 'selected="selected"';}?> data-tokens="{{ $item->name }}">{{ $item->name }}</option>
                                 @endforeach
                             </select>
                         </div>

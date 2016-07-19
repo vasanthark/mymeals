@@ -25,8 +25,10 @@ $router->group([
     'middleware' => 'auth',
         ], function () {
     Route::get('admin/dashboard', 'DashboardController@index');
+    
     Route::get('admin/profile', 'DashboardController@getProfile');
     Route::post('admin/profile', 'DashboardController@postProfile');
+    
     Route::get('admin/changepassword', 'DashboardController@getChangepassword');
     Route::post('admin/changepassword', 'DashboardController@postChangepassword');
     
