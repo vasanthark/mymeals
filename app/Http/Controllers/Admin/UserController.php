@@ -42,18 +42,27 @@ class UserController extends Controller {
      * @return Response
      */
     public function store(Request $request) {
+        
+        echo 'hi';
+//        print_r($json);
+        exit;
+        
         $data = $request->all();
-        
-        
         $validator1 = Validator::make($data, User::rules());
         $validator2 = Validator::make($data, UserInfo::rules());
+        
         if ($validator1->fails()) {
             return redirect()->back()->withInput()->withErrors($validator1->errors());
         }
         if ($validator2->fails()) {
             return redirect()->back()->withInput()->withErrors($validator2->errors());
         }
+        
         $location =$data['address'].', madurai, tamilnadu, india';
+        
+        
+        
+        
         $latlong    =  MyFuncs::lat_long($location);
         $map        =  explode(',' ,$latlong);
         $mapLat     =  $map[0];

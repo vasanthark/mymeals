@@ -25,4 +25,9 @@ class Meal extends Model {
     public function offer() {
         return $this->belongsTo('App\Offer');
     }
+    public function item()
+    {
+        return $this->belongsToMany('App\Item', 'meals_items', 
+          'meal_id', 'item_id');
+    }
 }
