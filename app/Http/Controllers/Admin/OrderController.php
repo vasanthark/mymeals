@@ -33,8 +33,18 @@ class OrderController extends Controller {
      */  
     public function create() {        
         $users = User::where('role','=','2')->where('status','=','1')->orderBy('username', 'asc')->get();
+        
+        /* Get today meals */
         $today = date("Y-m-d");
-        $meal = Meal::getMeal($today); 
+        $meal  = Meal::getMeal($today); 
+    
+        if(count($meal)==0)
+        {   
+            Session::flash('flash_message', 'Meals are not available for order today!!!');   
+            Session::flash('alert-class', 'alert-danger');
+            return redirect('/admin/orders');
+        }    
+            
         $meal->prepend('--Select Meal--', '');
         
         return view('admin.order.create', compact('users','meal'));

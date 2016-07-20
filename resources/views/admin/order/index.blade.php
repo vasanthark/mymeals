@@ -46,7 +46,11 @@ $(function () {
                             <tr>
                                 <th>S.No</th>
                                 <th>User</th>
-                                <th>Meals</th>                                
+                                <th>Meals</th>   
+                                <th>Sub Total</th>  
+                                <th>Offer Price</th>  
+                                <th>Grand Total</th>
+                                <th>Created At</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -56,7 +60,11 @@ $(function () {
                             <tr>
                                 <td>{{ ++$key }}</td>
                                 <td>{{ $order->user->userinfo->first_name }} {{ $order->user->userinfo->last_name }}</td>
-                                <td>{{ $order->meal->title }}</td>                               
+                                <td>{{ $order->meal->title }}</td>    
+                                <td>{{ $order->subtotal }}</td>    
+                                <td>{{ $order->offer_price }}</td>   
+                                <td>{{ $order->grandtotal }}</td>   
+                                <td>{{ date('d-m-Y', strtotime($order->created_at)) }}</td>
                                 <td align="center">
                                     @if($order->status == 0)         
                                         <i class="fa fa-circle text-red"></i>                                        
