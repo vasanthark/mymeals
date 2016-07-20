@@ -45,26 +45,36 @@
                             {!! Form::select('meal_id', $meal, null, ['class' => 'form-control mealids']) !!}
                         </div>
                     </div>
-                    <div class='form-group' id='price' style="display: none">
-                        <label class='col-sm-2 control-label'>Price:</label>
-                        <div class='col-sm-5 price-cont'>                            
+                    
+                    <div id='infodisp' style="display:none;">
+                        <div class="form-group">
+                            {!! Form::label('qty', 'Qty:', ['class' => 'col-sm-2 control-label']) !!}
+                            <div class="col-lg-1">  
+                                 {!! Form::input('number', 'qty', 1, ['class' => 'form-control','min'=>"1"]) !!}
+                            </div>
                         </div>
-                    </div>
-                    <div class='form-group' id='offer-price' style="display: none">
-                        <label class='col-sm-2 control-label'>Offer:</label>
-                        <div class='col-sm-5 offer-cont'>                            
+
+                        <div class='form-group' id='items'>
+                            <label class='col-sm-2 control-label'>Items:</label>
+                            <div class='col-sm-5 items-cont'>                            
+                            </div>
                         </div>
-                    </div>
-                    <div class='form-group' id='grand' style="display: none">
-                        <label class='col-sm-2 control-label'>Grandtotal:</label>
-                        <div class='col-sm-5 grand-cont'>                            
+                        <div class='form-group' id='price'>
+                            <label class='col-sm-2 control-label'>Price:</label>
+                            <div class='col-sm-5 price-cont'>                            
+                            </div>
                         </div>
-                    </div>
-                    <div class='form-group' id='items' style="display: none">
-                        <label class='col-sm-2 control-label'>Items:</label>
-                        <div class='col-sm-5 items-cont'>                            
+                        <div class='form-group' id='offer-price'>
+                            <label class='col-sm-2 control-label'>Offer:</label>
+                            <div class='col-sm-5 offer-cont'>                            
+                            </div>
                         </div>
-                    </div>
+                        <div class='form-group' id='grand'>
+                            <label class='col-sm-2 control-label'>Grandtotal:</label>
+                            <div class='col-sm-5 grand-cont'>                            
+                            </div>
+                        </div>
+                    </div>    
                     {!! Form::hidden('subtotal', '', ['id' => 'subtotal']) !!}
                     {!! Form::hidden('offer', '', ['id' => 'offer']) !!}
                     {!! Form::hidden('grandtotal', '', ['id' => 'grandtotal']) !!}
@@ -93,36 +103,43 @@
 <!-- /.content -->
 <script type="text/javascript">
 $(function () {
-
     $('.date').datepicker({format: 'dd-mm-yyyy', autoclose: true});
-    var mealids=$('.mealids option:selected').val();         
-    get_details(mealids);
+    var qty = $("#qty").val();
+    var mealids=$('#meal_id').val();  
+    
+    get_details(mealids,qty);
+    
+    $("#qty").bind('keyup mouseup', function () {
+        var mealids=$('#meal_id').val();  
+        if(mealids=="")
+        {
+            return false;
+        }    
+        var qty = $(this).val();
+        get_details(mealids,qty);
+    });
      
-    function get_details(id){
-        if(id != ''){
+    function get_details(id,qty){
+        if(id != '' && qty>0){
             $.ajax({
-               url: '/admin/orders/price/{id}',
+               url: '/admin/orders/price/{id}/{qty}',
                type: 'GET',            
-               data: { id: id },
+               data: { id: id, qty:qty },
                success: function(data) {
                    var str = data;
                    var res = str.split("++");
                    $('.price-cont').empty();
                    $('.price-cont').text(res[0]);
-                   $('#price').show();
-
+                   
                    $('.offer-cont').empty();
                    $('.offer-cont').text(res[1]);
-                   $('#offer-price').show();
-
+                  
                    $('.grand-cont').empty();
                    $('.grand-cont').text(res[2]);
-                   $('#grand').show();
-
+                  
                    $('.items-cont').empty();
                    $('.items-cont').text(res[3]);
-                   $('#items').show();
-                   
+                                      
                    $('#subtotal').val(res[0]);
                    $('#offer').val(res[1]);
                    $('#grandtotal').val(res[2]);
@@ -130,28 +147,26 @@ $(function () {
                },            
            });
         }else{
-                   $('.price-cont').empty();                   
-                   $('#price').hide();
-
-                   $('.offer-cont').empty();                   
-                   $('#offer-price').hide();
-
-                   $('.grand-cont').empty();                   
-                   $('#grand').hide();
-
-
-                   $('.items-cont').empty();                   
-                   $('#items').hide();
-                   
+                   $('.price-cont').empty();  
+                   $('.offer-cont').empty(); 
+                   $('.grand-cont').empty(); 
+                   $('.items-cont').empty(); 
                    $('#subtotal').val('0');
                    $('#offer').val('0');
                    $('#grandtotal').val('0');
         }
     }
+    
     $('.mealids').change(function () {
-         var id=$('.mealids option:selected').val();     
-         get_details(id);
-         
+        var id  = $('.mealids option:selected').val();  
+        var qty = $("#qty").val();
+        
+        get_details(id,qty);
+        
+        if(id>0)
+            $('#infodisp').show();
+        else
+            $('#infodisp').hide();    
      });
      
 });

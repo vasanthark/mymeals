@@ -46,6 +46,12 @@
                         </div>
                     </div>
                      <div class="form-group">
+                        {!! Form::label('qty', 'Qty:', ['class' => 'col-sm-2 control-label']) !!}               
+                        <div class="col-sm-5">   
+                            {{ $order->qty }}
+                        </div>
+                    </div>
+                     <div class="form-group">
                         {!! Form::label('meal_id', 'Subtotal:', ['class' => 'col-sm-2 control-label']) !!}               
                         <div class="col-sm-5">   
                             Rs {{ $order->subtotal }}

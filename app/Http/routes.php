@@ -51,7 +51,7 @@ $router->group([
      //Orders
     Route::resource('admin/orders', 'OrderController');
     Route::get('admin/orders/destroy/{key}', 'OrderController@destroy');
-    Route::get('admin/orders/price/{id}', 'OrderController@price');
+    Route::get('admin/orders/price/{id}/{qty}', 'OrderController@price');
 
 });
 

@@ -46,7 +46,8 @@ $(function () {
                             <tr>
                                 <th>S.No</th>
                                 <th>User</th>
-                                <th>Meals</th>   
+                                <th>Meals</th>  
+                                <th>Qty</th>  
                                 <th>Sub Total</th>  
                                 <th>Offer Price</th>  
                                 <th>Grand Total</th>
@@ -60,7 +61,8 @@ $(function () {
                             <tr>
                                 <td>{{ ++$key }}</td>
                                 <td>{{ $order->user->userinfo->first_name }} {{ $order->user->userinfo->last_name }}</td>
-                                <td>{{ $order->meal->title }}</td>    
+                                <td>{{ $order->meal->title }}</td> 
+                                <td>{{ $order->qty }}</td>   
                                 <td>{{ $order->subtotal }}</td>    
                                 <td>{{ $order->offer_price }}</td>   
                                 <td>{{ $order->grandtotal }}</td>   

@@ -71,12 +71,13 @@ class OrderController extends Controller {
         }
         
         $order = new Order;
-        $order->user_id = $data['user_id'];
-        $order->meal_id = $data['meal_id'];        
+        $order->user_id  = $data['user_id'];
+        $order->meal_id  = $data['meal_id'];   
+        $order->qty      = $data['qty'];   
         $order->subtotal = $data['subtotal'];
         $order->offer_price = $data['offer'];
-        $order->grandtotal = $data['grandtotal'];        
-        $order->status = $data['status'];
+        $order->grandtotal  = $data['grandtotal'];        
+        $order->status   = $data['status'];
         $order->save();
 
        
@@ -154,7 +155,8 @@ class OrderController extends Controller {
     }
     
     public function price(){
-        $id = $_GET['id'];   
+        $id = $_GET['id'];  
+        $qty = $_GET['qty'];
         $subtotal = 0;
         $offer = 0;
         $grandtotal = 0;
@@ -162,7 +164,7 @@ class OrderController extends Controller {
         
         //Meals price
         $meals = Meal::where('meal_id','=',$id)->first();        
-        $subtotal = $meals->price;
+        $subtotal = $meals->price * $qty;
         
         //Meals Offer
         if($meals->offer_id != 0){
