@@ -8,6 +8,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 //use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Lang;
 
 class AuthController extends Controller
 {
@@ -51,11 +54,35 @@ class AuthController extends Controller
             'password' => 'required|min:6|confirmed',
         ]);
     }
-    public function authenticate()
+    public function authenticate(Request $request)
     {
-        if (Auth::attempt(['username' => $username, 'password' => $password, 'role' => 1, 'status'=> 1])) {
-            return redirect()->intended('dashboard');
+        
+        $this->validate($request, [
+            'username' => 'required',
+            'password' => 'required',
+        ]);
+        
+        $throttles = $this->isUsingThrottlesLoginsTrait();
+        if ($throttles && $lockedOut = $this->hasTooManyLoginAttempts($request)) {
+            $this->fireLockoutEvent($request);
+
+            return $this->sendLockoutResponse($request);
         }
+        
+        $credentials =  $request->only('username', 'password');
+        $credentials['role'] = '1';
+        $credentials['status'] = '1';
+        
+        if (Auth::guard($this->getGuard())->attempt($credentials, $request->has('remember'))) {
+            return $this->handleUserWasAuthenticated($request, $throttles);
+        }
+        
+        if ($throttles && ! $lockedOut) {
+            $this->incrementLoginAttempts($request);
+        }
+
+        return $this->sendFailedLoginResponse($request);
+        
     }
     /**
      * Create a new user instance after a valid registration.
@@ -70,5 +97,62 @@ class AuthController extends Controller
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
         ]);
+    }
+    
+    /**
+     * Send the response after the user was authenticated.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  bool  $throttles
+     * @return \Illuminate\Http\Response
+     */
+    protected function handleUserWasAuthenticated(Request $request, $throttles)
+    {
+        if ($throttles) {
+            $this->clearLoginAttempts($request);
+        }
+
+        if (method_exists($this, 'authenticated')) {
+            return $this->authenticated($request, Auth::guard($this->getGuard())->user());
+        }
+
+        return redirect()->intended($this->redirectPath());
+    }
+    
+    /**
+     * Get the failed login response instance.
+     *
+     * @param \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    protected function sendFailedLoginResponse(Request $request)
+    {
+        return redirect()->back()
+            ->withInput($request->only($this->loginUsername(), 'remember'))
+            ->withErrors([
+                $this->loginUsername() => $this->getFailedLoginMessage(),
+            ]);
+    }
+    
+    /**
+     * Determine if the class is using the ThrottlesLogins trait.
+     *
+     * @return bool
+     */
+    protected function isUsingThrottlesLoginsTrait()
+    {
+        return in_array(
+            ThrottlesLogins::class, class_uses_recursive(static::class)
+        );
+    }
+    
+    /**
+     * Get the guard to be used during authentication.
+     *
+     * @return string|null
+     */
+    protected function getGuard()
+    {
+        return property_exists($this, 'guard') ? $this->guard : null;
     }
 }
