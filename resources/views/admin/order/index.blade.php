@@ -32,7 +32,7 @@ $(function () {
                     <ul class="order-status">
                         <li><i class="fa fa-circle text-red"></i> - Progress</li>
                         <li><i class="fa fa-circle text-green"></i> - Delivery</li>
-                        <li><i class="fa fa-circle text-blue"></i> - Not Delivery</li>
+                        <li><i class="fa fa-circle text-blue"></i> - Not Delivered</li>
                         <li><i class="fa fa-circle text-block"></i> - Cancel</li>                        
                     </ul>
                     <a href="{{URL::to('admin/orders/create')}}" class="btn btn-primary btn-link pull-right">

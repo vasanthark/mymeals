@@ -66,7 +66,7 @@
                     <div class="form-group">
                             {!! Form::label('status', 'Status:', ['class' => 'col-sm-2 control-label']) !!}
                         <div class="col-sm-5">
-                            {!! Form::select('status', ['Progress','Delivery','Not Delivery','Cancel'], $order->status,['class' => 'form-control']) !!}
+                            {!! Form::select('status', ['Progress','Delivery','Not Delivered','Cancel'], $order->status,['class' => 'form-control']) !!}
                         </div>
                     </div> 
                 </div>
