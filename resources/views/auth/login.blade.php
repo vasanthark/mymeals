@@ -20,8 +20,7 @@
         </div>
         <div class="footer">
             <button type="submit" class="btn bg-olive btn-block">Sign in</button>
-            <!--<p><a href="{{URL::to('password/reset')}}">I forgot my password</a></p>-->
-            <!--<a href="register.html" class="text-center">Register a new membership</a>-->
+            <p class="text-center"><a href="{{URL::to('password/email')}}">I forgot my password</a></p>
         </div>
     </form>
 </div>
