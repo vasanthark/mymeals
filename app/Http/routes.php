@@ -47,9 +47,11 @@ $router->group([
     //Offer
     Route::resource('admin/offers', 'OfferController');
     Route::post('admin/offers/store', 'OfferController@store'); 
-    Route::get('admin/offers/destroy/{key}', 'OfferController@destroy');
-    
-    
+    Route::get('admin/offers/destroy/{key}', 'OfferController@destroy');    
+     //Orders
+    Route::resource('admin/orders', 'OrderController');
+    Route::get('admin/orders/destroy/{key}', 'OrderController@destroy');
+    Route::get('admin/orders/price/{id}', 'OrderController@price');
 
 });
 

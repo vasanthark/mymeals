@@ -12,19 +12,25 @@
             <div class="box box-primary">
                 <!-- form start -->
                  @include('admin.partials.errors')
-                {!! Form::model( ['role' => 'form']) !!}
+                   {!! Form::open(['class' => 'form-horizontal','role' => 'form']) !!}
                     <div class="box-body">
                         <div class="form-group">
-                            {!! Form::label('old_password', 'Old Password') !!}
-                            {!! Form::password('old_password', array('class'=>'form-control', 'placeholder'=>'Old Password')) !!}
+                             {!! Form::label('old_password', 'Old Password', ['class' => 'col-sm-2 control-label']) !!}
+                            <div class="col-sm-5">
+                               {!! Form::password('old_password', array('class'=>'form-control', 'placeholder'=>'Old Password')) !!}
+                            </div>
                         </div>
                         <div class="form-group">
-                            {!! Form::label('new_password', 'New Password') !!}
-                            {!! Form::password('new_password', array('class'=>'form-control', 'placeholder'=>'New Password')) !!}
+                             {!! Form::label('new_password', 'New Password', ['class' => 'col-sm-2 control-label']) !!}
+                            <div class="col-sm-5">
+                               {!! Form::password('new_password', array('class'=>'form-control', 'placeholder'=>'New Password')) !!}
+                            </div>
                         </div>
-                         <div class="form-group">
-                            {!! Form::label('new_password_confirmation', 'Confirm New Password') !!}
-                            {!! Form::password('new_password_confirmation', array('class'=>'form-control', 'placeholder'=>'Confirm New Password')) !!}
+                        <div class="form-group">
+                             {!! Form::label('new_password_confirmation', 'Confirm New Password', ['class' => 'col-sm-2 control-label']) !!}
+                            <div class="col-sm-5">
+                               {!! Form::password('new_password_confirmation', array('class'=>'form-control', 'placeholder'=>'Confirm New Password')) !!}
+                            </div>
                         </div>
                     </div><!-- /.box-body -->
 

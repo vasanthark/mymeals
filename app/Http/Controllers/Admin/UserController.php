@@ -23,7 +23,7 @@ class UserController extends Controller {
      * @return Response
      */
     public function index() {
-        $users = User::orderBy('id', 'desc')->get();
+        $users = User::where('role','!=','1')->orderBy('id', 'desc')->get();
         return view('admin.user.index', compact('users'));
     }
 

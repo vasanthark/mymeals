@@ -43,3 +43,17 @@ tr:hover td.collapsed-group
 .bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {
   width: 100%;
 }
+
+.order-status {
+           list-style: none;
+    margin: 0;
+}
+.order-status li
+{
+   float: left;
+    width: 100px;
+    line-height: 80px;
+    vertical-align: middle;
+    text-align: center;
+    margin: 0;
+}

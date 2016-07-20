@@ -15,8 +15,11 @@ class CreateOrdersTable extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->increments('order_id');
             $table->integer('user_id')->unsigned();
-            $table->integer('meal_id')->unsigned();            
-            $table->integer('status')->default(1);            
+            $table->integer('meal_id')->unsigned();                        
+            $table->float('subtotal'); 
+            $table->float('offer_price'); 
+            $table->float('grandtotal'); 
+            $table->integer('status')->default(1);
             $table->timestamps();
            
             //Foreign Keys

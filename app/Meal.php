@@ -19,7 +19,7 @@ class Meal extends Model {
                 ], $merge);
     }
     public static function getMeal(){
-        $category = Meal::where('status', 1)->lists('title', 'meal_id');
+        $category = Meal::where('status', 1)->orderBy('meal_date', 'asc')->lists('title', 'meal_id');
         $category->prepend('--Select Meal--', '');
         return $category;
     }

@@ -14,7 +14,7 @@ class Offer extends Model {
         return array_merge([
             'offer_name' => 'required|unique:offers,offer_type,' . ($id ? "$id" : 'NULL') . ',offer_id',
 //            'offer_type' => 'required',            
-            'offer_image' => 'Mimes:jpeg,png,gif',
+            'offer_image' => 'required|Mimes:jpeg,png,gif',
             'offer_price' => 'required',
             'status' => 'required',
                 ], $merge);
