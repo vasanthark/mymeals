@@ -31,7 +31,7 @@ $(function () {
                 <div class="box-header">
                     <ul class="order-status">
                         <li><i class="fa fa-circle text-red"></i> - Progress</li>
-                        <li><i class="fa fa-circle text-green"></i> - Delivery</li>
+                        <li><i class="fa fa-circle text-green"></i> - Delivered</li>
                         <li><i class="fa fa-circle text-blue"></i> - Not Delivered</li>
                         <li><i class="fa fa-circle text-block"></i> - Cancel</li>                        
                     </ul>
