@@ -33,7 +33,9 @@ class OrderController extends Controller {
      */  
     public function create() {        
         $users = User::where('role','=','2')->where('status','=','1')->orderBy('username', 'asc')->get();
-        $meal = Meal::getMeal();        
+        $today = date("Y-m-d");
+        $meal = Meal::getMeal($today); 
+        $meal->prepend('--Select Meal--', '');
         
         return view('admin.order.create', compact('users','meal'));
     }

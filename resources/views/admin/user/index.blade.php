@@ -42,7 +42,6 @@ $(function () {
                                 <th>Name</th>                                
                                 <th>Email</th>   
                                 <th>Phone</th>
-                                <th>Role</th>
                                 <th>Status</th>                                
                                 <th>Action</th>
                             </tr>
@@ -53,14 +52,7 @@ $(function () {
                                 <td>{{ ++$key }}</td>                                
                                 <td>{{ $user->userinfo->first_name }} {{ $user->userinfo->last_name }}</td>
                                 <td>{{ $user->email }}</td>
-                                <td>{{ $user->userinfo->phone }}</td>
-                                <td align="center">
-                                    @if($user->role == 2)                               
-                                        User
-                                    @else
-                                        Admin
-                                    @endif
-                                </td>
+                                <td>{{ $user->userinfo->phone }}</td>                              
                                 <td align="center">
                                     @if($user->status == 1)                               
                                         <i class="fa fa-circle text-green"></i>
