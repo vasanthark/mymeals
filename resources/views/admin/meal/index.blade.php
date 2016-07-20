@@ -40,9 +40,9 @@ $(function () {
                             <tr>
                                 <th>S.No</th>
                                 <th>Title</th>
-                                <th>Price</th>
-                                <th>Meal Date</th>
+                                <th>Items</th>
                                 <th>Status</th>
+                                <th>Last Modified</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -51,8 +51,7 @@ $(function () {
                             <tr>
                                 <td>{{ ++$key }}</td>
                                 <td>{{ $meal->title }}</td>
-                                <td>{{ $meal->price }}</td>
-                                <td>{{ date('d-m-Y', strtotime($meal->meal_date)) }}</td>
+                                <td style="width: 60%">{{ implode(" , ",$meal->item()->lists("items.name")->toArray()) }}</td>                                                      
                                 <td align="center">
                                     @if($meal->status == 1)                               
                                         <i class="fa fa-circle text-green"></i>
@@ -60,6 +59,7 @@ $(function () {
                                         <i class="fa fa-circle text-red"></i>
                                     @endif
                                 </td>
+                                <td>{{ $meal->updated_at }}</td>
                                 <td align="center">
                                     <a href="{{route('admin.meals.edit',$meal->meal_id)}}" >
                                         <i class="glyphicon glyphicon-pencil"></i>

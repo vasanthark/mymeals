@@ -7,22 +7,20 @@ class Meal extends Model {
     public $item_id;
     public $table = "meals";
     protected $primaryKey = 'meal_id';
-    protected $fillable = ['offer_id', 'title', 'price', 'meal_date', 'status', 'item_id'];
+    protected $fillable = ['title', 'status', 'item_id'];
 
     public static function rules($id = 0, $merge = []) {
         return array_merge([
-            'title' => 'required',
-            'price' => 'required|numeric',
-            'meal_date' => 'required|unique:meals,meal_date,' . ($id ? "$id" : 'NULL') . ',meal_id',
+            'title' => 'required',           
             'item_id' => 'required',
                 ], $merge);
     }
 
     public static function getMeal($today=null) {
         if($today!="")
-            $category = Meal::where('meal_date', $today)->where('status', 1)->orderBy('meal_date', 'asc')->lists('title', 'meal_id');
+            $category = Meal::where('status', 1)->lists('title', 'meal_id');
         else
-            $category = Meal::where('status', 1)->orderBy('meal_date', 'asc')->lists('title', 'meal_id');
+            $category = Meal::where('status', 1)->lists('title', 'meal_id');
         
         return $category;
     }

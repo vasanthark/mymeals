@@ -25,31 +25,14 @@
                 
                 <!-- form start -->
                 {!! Form::open(['class' => 'form-horizontal','role' => 'form','route'=>['admin.meals.store']]) !!}
-                <div class="box-body">     
-                    <div class="form-group">
-                        {!! Form::label('offer_id', 'Offer:', ['class' => 'col-sm-2 control-label']) !!}
-                        <div class="col-sm-5">
-                            {!! Form::select('offer_id', $offer, null, ['class' => 'form-control']) !!}                                                            
-                        </div>
-                    </div>
+                <div class="box-body">    
+                  
                     <div class="form-group">
                         {!! Form::label('title', 'Title:*', ['class' => 'col-sm-2 control-label']) !!}
                         <div class="col-sm-5">
                             {!! Form::text('title', null, ['placeholder' => 'Title', 'class' => 'form-control']) !!}
                         </div>
-                    </div>
-                    <div class="form-group">
-                        {!! Form::label('price', 'Price:*', ['class' => 'col-sm-2 control-label']) !!}
-                        <div class="col-sm-5">
-                            {!! Form::text('price', null, ['placeholder' => 'Price', 'class' => 'form-control']) !!}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        {!! Form::label('meal_date', 'Meal Date:*', ['class' => 'col-sm-2 control-label']) !!}
-                        <div class="col-sm-5">
-                            {!! Form::text('meal_date', null, ['placeholder' => 'Meal Date', 'class' => 'form-control date']) !!}
-                        </div>
-                    </div>
+                    </div>                 
                     <div class="form-group">
                         {!! Form::label('item_id', 'Items:*', ['class' => 'col-sm-2 control-label']) !!}
                         <div class="col-sm-5">                            

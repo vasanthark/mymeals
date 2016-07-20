@@ -25,29 +25,11 @@
                 
                 <!-- form start -->
                 {!! Form::model($meal, ['class' => 'form-horizontal','method' => 'PATCH', 'role' => 'form','route'=>['admin.meals.update',$meal->meal_id]]) !!}
-                <div class="box-body">                    
-                     <div class="form-group">
-                        {!! Form::label('offer_id', 'Offer:', ['class' => 'col-sm-2 control-label']) !!}
-                        <div class="col-sm-5">
-                            {!! Form::select('offer_id', $offer, null, ['class' => 'form-control']) !!}                                                            
-                        </div>
-                    </div>
+                <div class="box-body">   
                     <div class="form-group">
                         {!! Form::label('title', 'Title:*', ['class' => 'col-sm-2 control-label']) !!}
                         <div class="col-sm-5">
                             {!! Form::text('title', null, ['placeholder' => 'Title', 'class' => 'form-control']) !!}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        {!! Form::label('price', 'Price:*', ['class' => 'col-sm-2 control-label']) !!}
-                        <div class="col-sm-5">
-                            {!! Form::text('price', null, ['placeholder' => 'Price', 'class' => 'form-control']) !!}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        {!! Form::label('meal_date', 'Meal Date:*', ['class' => 'col-sm-2 control-label']) !!}
-                        <div class="col-sm-5">
-                            {!! Form::text('meal_date', $mealsdate, ['placeholder' => 'Meal Date', 'class' => 'form-control date']) !!}
                         </div>
                     </div>
                     <div class="form-group">
