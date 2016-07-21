@@ -39,16 +39,20 @@ $router->group([
     //Item 
     Route::resource('admin/items', 'ItemController');
     Route::get('admin/items/destroy/{key}', 'ItemController@destroy');
+   
     //Meal 
     Route::resource('admin/meals', 'MealController');
     Route::get('admin/meals/destroy/{key}', 'MealController@destroy');
+    
+    //Day 
+    Route::resource('admin/days', 'DayController');
     
     //Offer
     Route::resource('admin/offers', 'OfferController');
     Route::post('admin/offers/store', 'OfferController@store'); 
     Route::get('admin/offers/destroy/{key}', 'OfferController@destroy');   
     
-     //Orders
+    //Orders
     Route::resource('admin/orders', 'OrderController');
     Route::get('admin/orders/destroy/{key}', 'OrderController@destroy');
     Route::get('admin/orders/price/{id}/{qty}', 'OrderController@price');

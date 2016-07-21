@@ -33,7 +33,14 @@
                 <a href="{{ URL::to('/admin/meals') }}">
                     <i class="fa fa-cutlery"></i> Meals 
                 </a>
-            </li>            
+            </li>  
+            
+            <li class="{{ Ekko::isActiveURL('/admin/days') }}">
+                <a href="{{ URL::to('/admin/days') }}">
+                    <i class="fa fa-calendar"></i> Days 
+                </a>
+            </li>  
+            
             <li class="{{ Ekko::isActiveURL('/admin/orders') }}">
                 <a href="{{ URL::to('/admin/orders') }}">
                     <i class="fa fa-shopping-cart"></i> Orders 

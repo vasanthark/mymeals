@@ -19,6 +19,7 @@ class Offer extends Model {
             'status' => 'required',
                 ], $merge);
     }
+    
     public static function getOffer(){
         $category = Offer::where('status', 1)->lists('offer_name', 'offer_id');
         $category->prepend('-- None --', '');

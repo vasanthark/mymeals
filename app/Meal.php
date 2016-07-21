@@ -16,13 +16,9 @@ class Meal extends Model {
                 ], $merge);
     }
 
-    public static function getMeal($today=null) {
-        if($today!="")
-            $category = Meal::where('status', 1)->lists('title', 'meal_id');
-        else
-            $category = Meal::where('status', 1)->lists('title', 'meal_id');
-        
-        return $category;
+    public static function getMeal() {       
+       $category = Meal::where('status', 1)->orderBy('title', 'asc')->lists('title', 'meal_id');        
+       return $category;
     }
    
     public function offer() {
