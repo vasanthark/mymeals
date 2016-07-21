@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Order;
 use App\Meal;
 use App\User;
+use App\UserInfo;
+use App\Helpers\MyFuncs;
 use App\MealsItem;
 use App\OrdersItem;
 use Illuminate\Http\Request;
@@ -13,6 +15,7 @@ use Illuminate\Http\Response;
 use Session;
 use Validator;
 use DB;
+use Hash;
 
 class OrderController extends Controller {
 
@@ -59,6 +62,16 @@ class OrderController extends Controller {
         
         $data = $request->all();
         
+        if($data['user_id'] == '-1'){
+            $validator1 = Validator::make($data, User::rules());
+            $validator2 = Validator::make($data, UserInfo::rules());
+            if ($validator1->fails() and $validator2->fails()) {
+                $errors = $validator1->errors(); 
+                $errors->merge($validator2->errors());          
+                return redirect()->back()->withInput()->withErrors($errors);
+            }
+        }
+        
         $messages = [
             'user_id.required' => 'User required.',
             'meal_id.required' => 'Meal required.',            
@@ -70,6 +83,34 @@ class OrderController extends Controller {
             return redirect()->back()->withInput()->withErrors($validator->errors());
         }
         
+        if($data['user_id'] == '-1'){
+            $location = $data['address'] . ', madurai, tamilnadu, india';
+
+            $latlong = MyFuncs::lat_long($location);
+            $map = explode(',', $latlong);
+            $mapLat = $map[0];
+            $mapLong = $map[1];
+
+            $usermodel = new User;
+            $usermodel->username = $data['username'];
+            $usermodel->password = Hash::make($data['password']);
+            $usermodel->email = $data['email'];
+            $usermodel->status = 1;
+            $usermodel->save();
+
+            $userinfo = new UserInfo;
+            $userinfo->timestamps = false;
+            $userinfo->user_id = $usermodel->id;
+            $userinfo->first_name = $data['first_name'];
+            $userinfo->last_name = $data['last_name'];
+            $userinfo->phone = $data['phone'];
+            $userinfo->address = $data['address'];
+            $userinfo->latitude = $mapLat;
+            $userinfo->longitude = $mapLong;
+            $userinfo->save();
+            
+            $data['user_id'] = $usermodel->id;
+        }  
         $order = new Order;
         $order->user_id  = $data['user_id'];
         $order->meal_id  = $data['meal_id'];   

@@ -31,14 +31,60 @@
                     <div class="form-group">
                         {!! Form::label('user_id', 'User:*', ['class' => 'col-sm-2 control-label']) !!}
                         <div class="col-sm-5">                            
-                            <select class="selectpicker" data-live-search="true" name="user_id"> 
+                            <select class="selectpicker" data-live-search="true" id="user_id" name="user_id"> 
                                 <option value="" data-tokens="">Nothing selected</option>
+                                <option value="-1" <?php if($existin_user == '-1'){ echo 'selected="selected"';}?> data-tokens="">Add User</option>
                                 @foreach ($users as $key => $user)
                                 <option value="{{ $user->id }}" <?php if($user->id == $existin_user){ echo 'selected="selected"';}?> data-tokens="{{ $user->userinfo->first_name }} {{ $user->userinfo->last_name }}">{{ $user->userinfo->first_name }} {{ $user->userinfo->last_name }}</option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
+                    <div id="add-users" style="display: none">
+                        <div class="form-group">
+                            {!! Form::label('email', 'Email:*', ['class' => 'col-sm-2 control-label']) !!}
+                            <div class="col-sm-5">
+                                {!! Form::text('email', null, ['placeholder' => 'Email', 'class' => 'form-control']) !!}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('username', 'Username:*', ['class' => 'col-sm-2 control-label']) !!}
+                            <div class="col-sm-5">
+                                {!! Form::text('username', null, ['placeholder' => 'Username', 'class' => 'form-control']) !!}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('password', 'Password:*', ['class' => 'col-sm-2 control-label']) !!}
+                            <div class="col-sm-5">
+                                {!! Form::password('password', ['placeholder' => 'Password', 'class' => 'form-control']) !!}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('first_name', 'First Name:*', ['class' => 'col-sm-2 control-label']) !!}
+                            <div class="col-sm-5">
+                                {!! Form::text('first_name', null, ['placeholder' => 'First Name', 'class' => 'form-control']) !!}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('last_name', 'Last name:', ['class' => 'col-sm-2 control-label']) !!}
+                            <div class="col-sm-5">
+                                {!! Form::text('last_name', null, ['placeholder' => 'Last name', 'class' => 'form-control']) !!}
+                            </div>
+                        </div>  
+                        <div class="form-group">
+                            {!! Form::label('address', 'Address:*', ['class' => 'col-sm-2 control-label']) !!}
+                            <div class="col-sm-5">
+                                {!! Form::text('address', null, ['placeholder' => 'Address', 'class' => 'form-control']) !!}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('phone', 'Phone:*', ['class' => 'col-sm-2 control-label']) !!}
+                            <div class="col-sm-5">
+                                {!! Form::text('phone', null, ['placeholder' => 'Phone', 'class' => 'form-control']) !!}
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="form-group">
                         {!! Form::label('meal_id', 'Meal:*', ['class' => 'col-sm-2 control-label']) !!}
                         <div class="col-sm-5">  
@@ -118,7 +164,24 @@ $(function () {
         var qty = $(this).val();
         get_details(mealids,qty);
     });
+    
+    var mealids=$('.mealids option:selected').val();         
+    get_details(mealids);
      
+    var user_id=$('#user_id option:selected').val(); 
+    add_user(user_id);
+    $('#user_id').change(function () {
+        var id=$('#user_id option:selected').val();    
+        add_user(id);
+    });
+    function add_user(id){
+         if(id == '-1'){
+             $('#add-users').show();
+         }else{
+            $('#add-users').hide();
+        }
+    }
+
     function get_details(id,qty){
         if(id != '' && qty>0){
             $.ajax({
@@ -156,7 +219,7 @@ $(function () {
                    $('#grandtotal').val('0');
         }
     }
-    
+
     $('.mealids').change(function () {
         var id  = $('.mealids option:selected').val();  
         var qty = $("#qty").val();
