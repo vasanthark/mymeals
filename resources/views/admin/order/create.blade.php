@@ -29,7 +29,7 @@
                     <div class="form-group">
                         {!! Form::label('user_id', 'User:*', ['class' => 'col-sm-2 control-label']) !!}
                         <div class="col-sm-5">                            
-                            <select class="selectpicker" data-live-search="true" id="user_id" name="user_id"> 
+                            <select class="form-control selectpicker" data-live-search="true" id="user_id" name="user_id"> 
                                 <option value="" data-tokens="">Nothing selected</option>
                                 <option value="-1" <?php
                                 if ($existin_user == '-1') {

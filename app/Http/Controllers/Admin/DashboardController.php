@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\User;
 use App\Meal;
 use App\Offer;
+use App\Order;
 use App\UserInfo;
 use App\Helpers\MyFuncs;
 use Illuminate\Http\Request;
@@ -27,10 +28,30 @@ class DashboardController extends Controller {
      * @return Response
      */
     public function index() {
-        $user_count = User::count();
-        $meal_count = Meal::count();
+        $user_count  = User::count();
+        $meal_count  = Meal::count();
+        $order_count = Order::count();
         $offer_count = Offer::count();
-        return view('admin.dashboard.index',compact('user_count','meal_count','offer_count'));
+        
+        // Today order count
+        $today = date("Y-m-d");
+        $today_order_count = Order::where('meal_date', '=', $today)->count();
+        $today_porder_count = Order::where('meal_date', '=', $today)->where('status', '=', 0)->count();
+        $today_total_sales = Order::where('meal_date', '=', $today)->sum('grandtotal');
+                
+        // Tommrow order        
+        $tommorow =  date("Y-m-d", strtotime("+1 day"));
+        $tommorow_order_count = Order::where('meal_date', '=', $tommorow)->count();
+        $tommorow_porder_count = Order::where('meal_date', '=', $tommorow)->where('status', '=', 0)->count();
+        $tommorow_total_sales = Order::where('meal_date', '=', $tommorow)->sum('grandtotal');
+        
+        // Day after Tommrow order        
+        $dat_tommorow =  date("Y-m-d", strtotime("+2 days"));
+        $dat_order_count  = Order::where('meal_date', '=', $dat_tommorow)->count();
+        $dat_porder_count  = Order::where('meal_date', '=', $dat_tommorow)->where('status', '=', 0)->count();
+        $dat_total_sales  = Order::where('meal_date', '=', $dat_tommorow)->sum('grandtotal');
+        
+        return view('admin.dashboard.index',compact('user_count','meal_count','offer_count','order_count','today_order_count','tommorow_order_count','dat_order_count','today_total_sales','tommorow_total_sales','dat_total_sales','today_porder_count','tommorow_porder_count','dat_porder_count'));
     }
 
     /**

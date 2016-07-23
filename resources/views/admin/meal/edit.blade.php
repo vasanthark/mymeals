@@ -36,7 +36,7 @@
                         {!! Form::label('item_id', 'Items:*', ['class' => 'col-sm-2 control-label']) !!}
                         
                         <div class="col-sm-5">   
-                            <select class="selectpicker" multiple data-live-search="true" name="item_id[]">
+                            <select class="form-control selectpicker" multiple data-live-search="true" name="item_id[]">
                                 @foreach ($items as $key => $item)
                                     @if (in_array($item->item_id,$mealsitems))
                                         <option value="{{ $item->item_id }}" data-tokens="{{ $item->name }}" selected>{{ $item->name }}</option>
