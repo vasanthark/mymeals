@@ -24,7 +24,7 @@
             <div class="box box-primary">
                 
                 <!-- form start -->
-                {!! Form::model($meal, ['class' => 'form-horizontal','method' => 'PATCH', 'role' => 'form','route'=>['admin.meals.update',$meal->meal_id]]) !!}
+                {!! Form::model($meal, ['class' => 'form-horizontal','method' => 'PATCH','files'=>'true', 'role' => 'form','route'=>['admin.meals.update',$meal->meal_id]]) !!}
                 <div class="box-body">   
                     <div class="form-group">
                         {!! Form::label('title', 'Title:*', ['class' => 'col-sm-2 control-label']) !!}
@@ -45,6 +45,16 @@
                                     @endif
                                 @endforeach
                             </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {!! Form::label('meal_image', 'Meal Image:*', ['class' => 'col-sm-2 control-label']) !!}
+                        <div class="col-sm-5">
+                            {!! Form::file('meal_image') !!}
+                            @if($old_file!=null)
+                                {!! Form::hidden('meal_image', $old_file) !!} 
+                                {!! Html::image('uploads/meal/'.$old_file, 'Meal', array('width' => 70, 'height' => 70 ,'class' => 'thumb')) !!}
+                                @endif
                         </div>
                     </div>
                     <div class="form-group">

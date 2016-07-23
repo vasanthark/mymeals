@@ -11,7 +11,8 @@ class Meal extends Model {
 
     public static function rules($id = 0, $merge = []) {
         return array_merge([
-            'title' => 'required',           
+            'title' => 'required', 
+            'meal_image' => 'required|Mimes:jpeg,png,gif',
             'item_id' => 'required',
                 ], $merge);
     }

@@ -24,7 +24,7 @@
             <div class="box box-primary">
                 
                 <!-- form start -->
-                {!! Form::open(['class' => 'form-horizontal','role' => 'form','route'=>['admin.meals.store']]) !!}
+                {!! Form::open(['class' => 'form-horizontal','role' => 'form','route'=>['admin.meals.store'],'files'=>'true']) !!}
                 <div class="box-body">    
                   
                     <div class="form-group">
@@ -41,6 +41,12 @@
                                 <option value="{{ $item->item_id }}" <?php if(in_array($item->item_id,$existin_post)){ echo 'selected="selected"';}?> data-tokens="{{ $item->name }}">{{ $item->name }}</option>
                                 @endforeach
                             </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {!! Form::label('meal_image', 'Meals Image:*', ['class' => 'col-sm-2 control-label']) !!}
+                        <div class="col-sm-5">
+                            {!! Form::file('meal_image') !!}
                         </div>
                     </div>
                     <div class="form-group">

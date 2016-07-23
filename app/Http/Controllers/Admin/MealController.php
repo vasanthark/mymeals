@@ -10,6 +10,7 @@ use App\MealsItem;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Session;
+use Input;
 use Validator;
 use DB;
 
@@ -44,6 +45,7 @@ class MealController extends Controller {
     public function store(Request $request) {
         
         $data = $request->all();
+        $fileName = '';
         
         $messages = [
             'item_id.required' => 'Items required.',
@@ -53,8 +55,20 @@ class MealController extends Controller {
             return redirect()->back()->withInput()->withErrors($validator->errors());
         }
         
+        if (Input::file())
+        {     
+            $image_obj = Input::file('meal_image');
+            print_r($image_obj);
+            $destinationPath = public_path() . '/uploads/meal/'; // upload path
+            $extension = $image_obj->getClientOriginalExtension(); // getting image extension
+            $fileName  = rand(11111, 99999) . time() . '.' . $extension; // renameing image
+            $image_obj->move($destinationPath, $fileName); // uploading file to given path
+            
+        }
+        
         $meal = new Meal;
         $meal->title = $data['title'];
+        $meal->meal_image = $fileName;
         $meal->status = $data['status']; 
         $meal->save();
         $meal->item()->attach($data['item_id']);
@@ -83,12 +97,13 @@ class MealController extends Controller {
     public function edit($id) {
         $mealsitems = array();
         $meal  = Meal::find($id);
+        $old_file = $meal->meal_image;
         // All items
         $items = Item::orderBy('name', 'asc')->get();
         // Existing items
         $mealsitems = $meal->item()->lists("items.item_id")->toArray();
         
-        return view('admin.meal.edit', compact('meal','mealsitems','items'));
+        return view('admin.meal.edit', compact('meal','mealsitems','items','old_file'));
     }
 
     /**
@@ -100,14 +115,40 @@ class MealController extends Controller {
      */
     public function update(Request $request, $id) {
         $data = $request->except(['_method', '_token']);
-        
-        $validator = Validator::make($data, Meal::rules($id));
-        if ($validator->fails()) {
-            return redirect()->back()->withInput()->withErrors($validator->errors());
+       
+        $fileName = '';
+        if(Input::file()){
+            $this->validate($request, [
+                'title' => 'required', 
+                'meal_image' => 'Mimes:jpeg,png,gif',
+                'item_id' => 'required',
+            ]);
+        }else{
+            $this->validate($request, [
+                'title' => 'required', 
+                'item_id' => 'required',
+            ]);
+        }
+//        $validator = Validator::make($data, Meal::rules($id));
+//        if ($validator->fails()) {
+//            return redirect()->back()->withInput()->withErrors($validator->errors());
+//        }
+        $meal = Meal::find($id);
+         if (Input::file())
+        {     
+            $image_obj = Input::file('meal_image');
+            print_r($image_obj);
+            $destinationPath = public_path() . '/uploads/meal/'; // upload path
+            $extension = $image_obj->getClientOriginalExtension(); // getting image extension
+            $fileName  = rand(11111, 99999) . time() . '.' . $extension; // renameing image
+            $image_obj->move($destinationPath, $fileName); // uploading file to given path
+            
+        }else{
+            $fileName = $data['meal_image'];
         }
         
-        $meal = Meal::find($id);           
         $meal->title = $data['title'];
+        $meal->meal_image = $fileName;
         $meal->status = $data['status'];  
         $meal->item()->sync($data['item_id']);        
         $meal->save();   
