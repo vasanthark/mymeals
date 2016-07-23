@@ -23,7 +23,7 @@ class UserController extends Controller {
      * @return Response
      */
     public function index() {
-        $users = User::where('role','!=','1')->orderBy('id', 'desc')->get();
+        $users = User::where('role','=','2')->orderBy('id', 'desc')->get();
         return view('admin.user.index', compact('users'));
     }
 
@@ -61,6 +61,7 @@ class UserController extends Controller {
             $usermodel->username = $data['username'];
             $usermodel->password = Hash::make($data['password']);
             $usermodel->email = $data['email'];
+            $usermodel->role = 2;
             $usermodel->status = $data['status'];
             $usermodel->save();
 

@@ -74,3 +74,10 @@ Route::post('password/email', 'Auth\PasswordController@postEmail');
 // Password reset routes...
 Route::get('password/reset/{token}', 'Auth\PasswordController@getReset');
 Route::post('password/reset', 'Auth\PasswordController@postReset');
+
+Route::group(array('prefix' => 'api/v1'), function()
+{    
+    Route::get('login/{username}/{password}', 'HomeController@login');       
+    Route::get('registration/{fname}/{lname}/{uname}/{pwd}/{email}/{address}/{phone}', 'HomeController@registration');       
+    Route::get('guest/{uname}/{email}/{address}/{phone}', 'HomeController@guest');       
+});
