@@ -17,6 +17,7 @@ class UserInfo extends Model {
             'phone' => 'required',
                 ], $merge);
     }
+    
     public function user() {
         return $this->belongsTo('App\User');
     }

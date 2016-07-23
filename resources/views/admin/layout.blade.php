@@ -22,6 +22,8 @@
           <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
         <![endif]-->
 
+        <link href="{{ URL::asset('css/datepicker/datepicker3.css') }}" rel="stylesheet" type="text/css" />
+        <link href="{{ URL::asset('css/bootstrap-select.css') }}" rel="stylesheet" type="text/css" />
         <style>
             @yield('styles')
         </style>
@@ -35,6 +37,8 @@
        
          <!-- AdminLTE App -->
         <script src="{{ URL::asset('js/AdminLTE/app.js') }}" type="text/javascript"></script>
+        <script type="text/javascript" src="{{ URL::asset('js/plugins/datepicker/bootstrap-datepicker.js') }}"></script>
+        <script type="text/javascript" src="{{ URL::asset('js/bootstrap-select.js') }}"></script>
         @yield('script_files')
         
        
@@ -64,3 +68,8 @@
         <!-- ./wrapper -->
     </body>
 </html>
+<script type="text/javascript">
+$(function () {
+    $('.date').datepicker({format: 'yyyy-mm-dd', autoclose: true});
+});
+</script>

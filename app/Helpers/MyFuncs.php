@@ -17,4 +17,10 @@ class MyFuncs {
         $long = $json->{'results'}[0]->{'geometry'}->{'location'}->{'lng'};
         return $lat.','.$long;
     }
+    
+    public static function get_date($day)
+    {        
+        $date_of_day =  date( 'Y-m-d', strtotime( $day.' this week' ) );
+        return $date_of_day;
+    }        
 }

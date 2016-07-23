@@ -4,15 +4,6 @@
 
 @section('content')
 
-@section('link')
-<link href="{{ URL::asset('css/datepicker/datepicker3.css') }}" rel="stylesheet" type="text/css" />
-<link href="{{ URL::asset('css/bootstrap-select.css') }}" rel="stylesheet" type="text/css" />
-@stop
-
-@section('script_files')
-<script type="text/javascript" src="{{ URL::asset('js/plugins/datepicker/bootstrap-datepicker.js') }}"></script>
-<script type="text/javascript" src="{{ URL::asset('js/bootstrap-select.js') }}"></script>
-@stop
 <!-- Main content -->
 <section class="content">
     
@@ -42,39 +33,40 @@
                     <div class="form-group">
                         {!! Form::label('meal_id', 'Items:', ['class' => 'col-sm-2 control-label']) !!}               
                         <div class="col-sm-5">   
-                            {{ $items }}
+                            {{ implode(" , ", $order->meal->item()->lists("items.name")->toArray()) }}
                         </div>
                     </div>
                      <div class="form-group">
                         {!! Form::label('qty', 'Qty:', ['class' => 'col-sm-2 control-label']) !!}               
-                        <div class="col-sm-5">   
-                            {{ $order->qty }}
+                        <div class="col-lg-1">                              
+                            <input type='number' value="{{ $order->qty }}" data-dayid="{{ $order->day_id }}" name='qty' id="qtyclck" class='form-control qtyclk' min="1">
                         </div>
                     </div>
                      <div class="form-group">
-                        {!! Form::label('meal_id', 'Subtotal:', ['class' => 'col-sm-2 control-label']) !!}               
+                        {!! Form::label('meal_id', 'Price:', ['class' => 'col-sm-2 control-label']) !!}               
                         <div class="col-sm-5">   
                             Rs {{ $order->subtotal }}
                         </div>
                     </div>
                      <div class="form-group">
-                        {!! Form::label('meal_id', 'Offer:', ['class' => 'col-sm-2 control-label']) !!}               
-                        <div class="col-sm-5">   
-                            Rs {{ $order->offer_price }}
-                        </div>
-                    </div>
-                     <div class="form-group">
                         {!! Form::label('meal_id', 'Grandtotal:', ['class' => 'col-sm-2 control-label']) !!}               
-                        <div class="col-sm-5">   
+                        <div class="col-sm-5" id="gtotal">   
                             Rs {{ $order->grandtotal }}
                         </div>
                     </div>
                     <div class="form-group">
                             {!! Form::label('status', 'Status:', ['class' => 'col-sm-2 control-label']) !!}
-                        <div class="col-sm-5">
+                        <div class="col-lg-2">
                             {!! Form::select('status', ['Progress','Delivered','Not Delivered','Cancel'], $order->status,['class' => 'form-control']) !!}
                         </div>
                     </div> 
+                    
+                     <div class="form-group">
+                        {!! Form::label('meal_id', 'Delivery Date:', ['class' => 'col-sm-2 control-label']) !!}               
+                        <div class="col-lg-4">   
+                            {{ $order->meal_date }}
+                        </div>
+                    </div>
                 </div>
 
                     <div class="box-footer">
@@ -85,6 +77,7 @@
                             </a>
                         </div>
                     </div>
+                <input type="hidden" value="{{ $order->grandtotal }}" name="grandtotal" id="grandtotal">
                 {!! Form::close() !!}
             </div><!-- /.box -->
         </div>
@@ -94,9 +87,28 @@
 <!-- /.content -->
 <script type="text/javascript">
 $(function () {
-
-    $('.date').datepicker({format: 'dd-mm-yyyy', autoclose: true});
-
+     $(".qtyclk").live('keyup mouseup', function () {
+        var dayid = $(this).data("dayid");
+        var qty = $(this).val();
+        get_details(dayid, qty);
+    });
+    
+     function get_details(id, qty) {
+        if (id != '' && qty > 0) {
+            $.ajax({
+                url: '/admin/orders/price/{id}/{qty}',
+                type: 'GET',
+                dataType: "json",
+                data: {id: id, qty: qty},
+                success: function (data) {
+                    var grandtotal = data[0];
+                    var id = data[1];
+                    $('#gtotal').html("Rs "+grandtotal);
+                    $('input[name="grandtotal"]').val(grandtotal);
+                },
+            });
+        }
+    }
 });
 </script>
 @stop
