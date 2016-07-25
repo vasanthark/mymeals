@@ -59,7 +59,6 @@ class MealController extends Controller {
         if (Input::file())
         {     
             $image_obj = Input::file('meal_image');
-            print_r($image_obj);
             $destinationPath = public_path() . '/uploads/meal/'; // upload path
             $extension = $image_obj->getClientOriginalExtension(); // getting image extension
             $fileName  = rand(11111, 99999) . time() . '.' . $extension; // renameing image
@@ -168,10 +167,20 @@ class MealController extends Controller {
     public function destroy($id) {
         
         // Delete meal
-        $edition_exist = Day::where(['meal_id' => $id])->get()->count(); 
-        if($edition_exist>0)
+        $days_exist = Day::where(['meal_id' => $id])->get();
+        if(count($days_exist) > 0)
         {
-            Session::flash('flash_message', 'Sorry this meal have day meal. So please change day meal and do this action!!!'); 
+            $numItems = count($days_exist);
+            $i = 0;
+            $days = '';
+            foreach($days_exist as $key=>$value) {
+              if(++$i === $numItems) {
+                $days .= $value->name;
+              }else{
+                $days .= $value->name.',';
+              }
+            }    
+            Session::flash('flash_message', 'This meal is assigned on "'.$days.'" .So you cant delete this meal!!!'); 
             Session::flash('alert-class', 'alert-danger');
             return redirect('/admin/meals/');
         }

@@ -28,19 +28,19 @@ class HomeController extends Controller
          try{            
             $statusCode = 200;
             $response = [
-              'meassage'  => [],    
+              'message'  => [],    
               'id' => [],
               'username'=> [],
             ];             
             if (Auth::attempt(array('username' => $username, 'password' => $password,'role'=>2, 'status'=>'1'))){
                 $response = [
-                  'meassage'  => 'success',    
+                  'message'  => 'success',    
                   'id' => Auth::id(),
                   'username'=> $username,
                 ]; 
             }else{        
                 $response = [
-                    'meassage'  => 'wrong',    
+                    'message'  => 'wrong',    
                     'id' => '',
                     'username'=> $username,
                 ]; 
@@ -51,10 +51,7 @@ class HomeController extends Controller
         }catch (Exception $e){
             $statusCode = 400;
         }finally{          
-            echo '<pre>';
-            print_r($response);
-            exit;
-//            return response()->json([$response, $statusCode]);
+            return response()->json([$response, $statusCode]);
         }   
     } 
     public function registration($fname, $lname, $uname, $pwd, $email, $address, $phone){
@@ -74,7 +71,7 @@ class HomeController extends Controller
             $statusCode = 200;
             
             $response = [
-              'meassage'  => [],    
+              'message'  => [],    
               'errors' => [],
             ]; 
             
@@ -85,7 +82,7 @@ class HomeController extends Controller
                 $errors = $validator1->errors(); 
                 $errors->merge($validator2->errors());  
                  $response = [
-                    'meassage'  => 'wrong',    
+                    'message'  => 'wrong',    
                     'errors'=> $errors,
                 ]; 
             }else{
@@ -118,7 +115,7 @@ class HomeController extends Controller
                 $userinfo->save();
                 
                 $response = [
-                    'meassage'  => 'success',    
+                    'message'  => 'success',    
                     'errors'=> 'null',
                 ]; 
             }
@@ -126,9 +123,6 @@ class HomeController extends Controller
         }catch (Exception $e){
             $statusCode = 400;
         }finally{          
-//            echo '<pre>';
-//            print_r($response);
-//            exit;
             return response()->json([$response, $statusCode]);
         }   
     }
@@ -151,7 +145,7 @@ class HomeController extends Controller
             $statusCode = 200;
             
             $response = [
-              'meassage'  => [],    
+              'message'  => [],    
               'errors' => [],
             ];             
             
@@ -163,7 +157,7 @@ class HomeController extends Controller
             ]);
             if ( $validator->fails()) {
                  $response = [
-                    'meassage'  => 'wrong',    
+                    'message'  => 'wrong',    
                     'errors'=> $validator->errors(),
                 ]; 
             }else{
@@ -198,7 +192,7 @@ class HomeController extends Controller
                 $userinfo->save();
                 
                 $response = [
-                    'meassage'  => 'success',    
+                    'message'  => 'success',    
                     'errors'=> 'null',
                 ]; 
             }
@@ -206,9 +200,6 @@ class HomeController extends Controller
         }catch (Exception $e){
             $statusCode = 400;
         }finally{          
-//            echo '<pre>';
-//            print_r($response);
-//            exit;
             return response()->json([$response, $statusCode]);
         }   
     }
