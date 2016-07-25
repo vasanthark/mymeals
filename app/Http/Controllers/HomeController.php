@@ -45,9 +45,7 @@ class HomeController extends Controller
                     'username'=> $username,
                 ]; 
             }
-               
-            $articlecounts = count($response['articles']);                 
-          
+                         
         }catch (Exception $e){
             $statusCode = 400;
         }finally{          
