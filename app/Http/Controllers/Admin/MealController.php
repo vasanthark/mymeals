@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Meal;
 use App\Item;
 use App\Offer;
+use App\Day;
 use App\MealsItem;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -167,6 +168,13 @@ class MealController extends Controller {
     public function destroy($id) {
         
         // Delete meal
+        $edition_exist = Day::where(['meal_id' => $id])->get()->count(); 
+        if($edition_exist>0)
+        {
+            Session::flash('flash_message', 'Sorry this meal have day meal. So please change day meal and do this action!!!'); 
+            Session::flash('alert-class', 'alert-danger');
+            return redirect('/admin/meals/');
+        }
         $meal = Meal::find($id);
         $meal->delete();
         Session::flash('flash_message', 'meal deleted successfully!');        

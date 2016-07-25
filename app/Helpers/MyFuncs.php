@@ -10,11 +10,17 @@ class MyFuncs {
     public static function lat_long($address){
 
         $address = str_replace(" ", "+", $address);
-        //echo "http://maps.google.com/maps/api/geocode/json?address=$address&sensor=false";exit;
+        //echo "http://maps.google.com/maps/api/geocode/json?address=$address&sensor=false";
         $json = file_get_contents("https://maps.google.com/maps/api/geocode/json?address=$address&sensor=false");
-        $json = json_decode($json);     
-        $lat = $json->{'results'}[0]->{'geometry'}->{'location'}->{'lat'};
-        $long = $json->{'results'}[0]->{'geometry'}->{'location'}->{'lng'};
+        $json = json_decode($json);  
+        $status = $json->{'status'};
+        if($status == 'OK'){        
+            $lat = $json->{'results'}[0]->{'geometry'}->{'location'}->{'lat'};
+            $long = $json->{'results'}[0]->{'geometry'}->{'location'}->{'lng'};
+        }else{
+            $lat = '0.0';
+            $long = '0.0';
+        }
         return $lat.','.$long;
     }
     
