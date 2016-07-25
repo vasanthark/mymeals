@@ -42,7 +42,8 @@ $(function () {
                                 <th>Name</th>                                
                                 <th>Email</th>   
                                 <th>Phone</th>
-                                <th>Status</th>                                
+                                <th>Status</th>   
+                                <th>Last Modified</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -60,6 +61,7 @@ $(function () {
                                         <i class="fa fa-circle text-red"></i>
                                     @endif
                                 </td>
+                                <td>{{ $user->updated_at }}</td>
                                 <td align="center">
                                     <a href="{{route('admin.users.edit',$user->id)}}" >
                                         <i class="glyphicon glyphicon-pencil"></i>

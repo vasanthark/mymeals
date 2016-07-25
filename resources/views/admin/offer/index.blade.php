@@ -41,7 +41,8 @@ $(function () {
                                 <th>S.No</th>
                                 <th>Offer Name</th>                                
                                 <th>Offer Price</th>                                
-                                <th>Status</th>                                
+                                <th>Status</th>    
+                                <th>Last Modified</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -58,6 +59,7 @@ $(function () {
                                         <i class="fa fa-circle text-red"></i>
                                     @endif
                                 </td>
+                                <td>{{ $offer->updated_at }}</td>
                                 <td align="center">
                                     <a href="{{route('admin.offers.edit',$offer->offer_id)}}" >
                                         <i class="glyphicon glyphicon-pencil"></i>

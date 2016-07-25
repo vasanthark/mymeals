@@ -39,7 +39,8 @@ $(function () {
                         <thead>
                             <tr>
                                 <th>S.No</th>
-                                <th>Name</th>                                
+                                <th>Name</th>      
+                                <th>Last Modified</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -48,6 +49,7 @@ $(function () {
                             <tr>
                                 <td>{{ ++$key }}</td>
                                 <td>{{ $item->name }}</td>
+                                <td>{{ $item->updated_at }}</td>
                                 <td align="center">
                                     <a href="{{route('admin.items.edit',$item->item_id)}}" >
                                         <i class="glyphicon glyphicon-pencil"></i>
