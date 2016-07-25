@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\User;
 use App\UserInfo;
+use App\Meal;
+use App\Item;
+use App\Offer;
+use App\Day;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -44,6 +48,34 @@ class HomeController extends Controller
                     'id' => '',
                     'username'=> $username,
                 ]; 
+            }
+                         
+        }catch (Exception $e){
+            $statusCode = 400;
+        }finally{          
+            return response()->json([$response, $statusCode]);
+        }   
+    } 
+     public function mealdays($day)
+    {             
+         
+         try{            
+            $statusCode = 200;
+            $response = array();     
+            if($day != 'null'){
+                $days = Day::where('name','=',$day)->orderBy('day_id', 'asc')->get();
+            }  else {
+                $days = Day::orderBy('day_id', 'asc')->get();
+            }
+            
+            foreach ($days as $key=>$value){
+                    $response[$value->name][] = [
+                        'day_id'  => $value->day_id,
+                        'day'  => $value->name,    
+                        'meal_id' => implode(" , ",$value->meal->item()->lists("items.name")->toArray()),
+                        'meal_title' => $value->name,
+                        'price'=> $value->price,
+                    ];
             }
                          
         }catch (Exception $e){
