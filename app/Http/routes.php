@@ -81,4 +81,7 @@ Route::group(array('prefix' => 'api/v1'), function()
     Route::get('registration/{fname}/{lname}/{uname}/{pwd}/{email}/{address}/{phone}', 'HomeController@registration');       
     Route::get('guest/{uname}/{email}/{address}/{phone}', 'HomeController@guest');       
     Route::get('mealdays/{day}', 'HomeController@mealdays');    
+    Route::get('oreder/{userid}/{dayid}/{mealid}/{mealdate}', 'HomeController@oreder');
+    Route::get('updateqty/{userid}/{dayid}/{mealid}/{mealdate}/{qty}/{subtotal}', 'HomeController@updateqty');
+    Route::get('deleteorder/{userid}/{dayid}/{mealid}/{mealdate}', 'HomeController@deleteorder');    
 });
