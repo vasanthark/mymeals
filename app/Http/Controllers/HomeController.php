@@ -71,7 +71,7 @@ class HomeController extends Controller
                     'day_id'  => $days->day_id,
                     'day'  => $days->name,    
                     'meal_id' => $days->meal_id, 
-                    'meal_name'=> $days->title,
+                    'meal_name'=> $days->meal->title,
                     'meal_date'=> date('Y-m-d', strtotime($day)),
                     'items' => implode(" , ",$days->meal->item()->lists("items.name")->toArray()),
                     'price'=> $days->price,
@@ -84,7 +84,7 @@ class HomeController extends Controller
                        'day_id'  => $days->day_id,
                        'day'  => $days->name,    
                        'meal_id' => $days->meal_id, 
-                       'meal_name'=> $days->title,
+                       'meal_name'=> $days->meal->title,
                        'meal_date'=> date('Y-m-d', strtotime("+".$i." day")),
                        'items' => implode(" , ",$days->meal->item()->lists("items.name")->toArray()),
                        'price'=> $days->price,
@@ -215,13 +215,10 @@ class HomeController extends Controller
         }catch (Exception $e){
             $statusCode = 400;
         }finally{    
-//            echo '<pre>';
-//         print_r($response);
-//         exit;
             return response()->json([$response, $statusCode]);
         }   
     }
-   
+        
     public function registration($fname, $lname, $uname, $pwd, $email, $address, $phone){
         $data = array();
         $data['first_name'] =  ($fname != 'null')? $fname : '';

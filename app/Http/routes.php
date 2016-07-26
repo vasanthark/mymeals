@@ -83,5 +83,5 @@ Route::group(array('prefix' => 'api/v1'), function()
     Route::get('mealdays/{day}', 'HomeController@mealdays');    
     Route::get('oreder/{userid}/{dayid}/{mealid}/{mealdate}', 'HomeController@oreder');
     Route::get('updateqty/{userid}/{dayid}/{mealid}/{mealdate}/{qty}/{subtotal}', 'HomeController@updateqty');
-    Route::get('deleteorder/{userid}/{dayid}/{mealid}/{mealdate}', 'HomeController@deleteorder');    
+    Route::get('deleteorder/{userid}/{dayid}/{mealid}/{mealdate}', 'HomeController@deleteorder');
 });
