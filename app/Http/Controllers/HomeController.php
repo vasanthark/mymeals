@@ -99,30 +99,50 @@ class HomeController extends Controller
         }   
     } 
     public function oreder($userid, $dayid, $mealid, $mealdate){
-            if($dayid != 'null' && $mealid != 'null' && $mealdate != 'null'){
-                $day = Day::where('day_id','=',$dayid)->first();
-                $temporeder = new TempOrder;
-                $temporeder->user_id = $userid;
-                $temporeder->day_id = $dayid;
-                $temporeder->meal_id  = $mealid;
-                $temporeder->meal_date  = $mealdate;
-                $temporeder->qty  = 1;
-                $temporeder->subtotal = $day->price;
-                $temporeder->offer_price = 0;
-                $temporeder->grandtotal = $day->price;
-                $temporeder->save();
-            }
-         
+            $today = date('Y-m-d').' 00:00:00';
+            
         try{            
             $statusCode = 200;
             
-            $today = date('Y-m-d').' 00:00:00';
+            if($dayid != 'null' && $mealid != 'null' && $mealdate != 'null'){
+                $day = Day::where('day_id','=',$dayid)->first();
+                $check_old = TempOrder::where('user_id','=',$userid)
+                            ->where('day_id','=',$dayid)
+                            ->where('meal_id','=',$mealid)
+                            ->where('meal_date','=',$mealdate)                            
+                            ->where('updated_at','>',$today)
+                            ->first();
+                if($check_old){
+                    $check_old->user_id = $userid;
+                    $check_old->day_id = $dayid;
+                    $check_old->meal_id  = $mealid;
+                    $check_old->meal_date  = $mealdate;
+                    $check_old->qty  = 1;
+                    $check_old->subtotal = $day->price;
+                    $check_old->offer_price = 0;
+                    $check_old->grandtotal = $day->price;
+                    $check_old->save();
+                }else{
+                    $temporeder = new TempOrder;
+                    $temporeder->user_id = $userid;
+                    $temporeder->day_id = $dayid;
+                    $temporeder->meal_id  = $mealid;
+                    $temporeder->meal_date  = $mealdate;
+                    $temporeder->qty  = 1;
+                    $temporeder->subtotal = $day->price;
+                    $temporeder->offer_price = 0;
+                    $temporeder->grandtotal = $day->price;
+                    $temporeder->save();
+                }
+            }
+            
             $temporeders = TempOrder::where('user_id','=',$userid)->where('updated_at','>',$today)->orderBy('temporder_id', 'asc')->get();            
             if($temporeders->isEmpty()){
                 $response[] = [
                     'user_id'  => $userid, 
                     'day_id' => $dayid,
                     'meal_id' => $mealid,
+                    'meal_name' => '',
                     'meal_date' => $mealdate,
                     'qty' => '0',
                     'subtotal' => '0',
@@ -136,6 +156,7 @@ class HomeController extends Controller
                         'user_id'  => $oreder->user_id, 
                         'day_id' => $oreder->day_id,
                         'meal_id' => $oreder->meal_id,
+                        'meal_name' => $oreder->meal->title,
                         'meal_date' => $oreder->meal_date,
                         'qty' => $oreder->qty,
                         'subtotal' => $oreder->subtotal,
@@ -218,7 +239,53 @@ class HomeController extends Controller
             return response()->json([$response, $statusCode]);
         }   
     }
-        
+    
+    public function checkout($userid){
+         
+        try{            
+            $statusCode = 200;
+            
+            $today = date('Y-m-d').' 00:00:00';
+            $temporeders = TempOrder::where('user_id','=',$userid)
+                            ->where('updated_at','>',$today)
+                            ->get();
+            
+            if($temporeders->isEmpty()){
+                $response[$userid] = [
+                    'message'  => 'wrong',
+                ]; 
+            }else{
+                foreach ($temporeders as $temp){
+                    $order = new Order;
+                $order->user_id = $temp->user_id;
+                $order->meal_id = $temp->meal_id;
+                $order->day_id  = $temp->day_id;
+                $order->qty     = $temp->qty;
+                $order->subtotal    = $temp->subtotal;
+                $order->offer_price = $temp->offer_price;
+                $order->grandtotal  = $temp->grandtotal;
+                $order->status = 0;
+                $order->meal_title = $temp->meal->title;
+                $order->meal_item  = implode(" , ",$temp->meal->item()->lists("items.name")->toArray());
+                $order->meal_date  = $temp->meal_date;
+                $order->order_username  = $temp->user->username ;
+                $order->order_phone     = $temp->user->userInfo->phone;
+                $order->order_address   = $temp->user->userInfo->address;
+                $order->order_lat_long  = $temp->user->userInfo->latitude."~".$temp->user->userInfo->longitude;
+                $order->save();
+                $temp->delete();
+                }
+                $response[$userid] = [
+                        'message'  => 'success',  
+                    ];
+            }
+            
+        }catch (Exception $e){
+            $statusCode = 400;
+        }finally{    
+            return response()->json([$response, $statusCode]);
+        }   
+    }
     public function registration($fname, $lname, $uname, $pwd, $email, $address, $phone){
         $data = array();
         $data['first_name'] =  ($fname != 'null')? $fname : '';
