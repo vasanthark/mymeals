@@ -26,7 +26,8 @@ class MyFuncs {
     
     public static function get_date($day)
     {        
-        $date_of_day =  date( 'Y-m-d', strtotime( $day.' this week' ) );
+//        $date_of_day =  date( 'Y-m-d', strtotime( $day.' this week' ) );
+        $date_of_day = date('Y-m-d', strtotime($day));
         return $date_of_day;
     }        
     public static function getRandomString($length = 9) {

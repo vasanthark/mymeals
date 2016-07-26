@@ -137,7 +137,6 @@ class MealController extends Controller {
          if (Input::file())
         {     
             $image_obj = Input::file('meal_image');
-            print_r($image_obj);
             $destinationPath = public_path() . '/uploads/meal/'; // upload path
             $extension = $image_obj->getClientOriginalExtension(); // getting image extension
             $fileName  = rand(11111, 99999) . time() . '.' . $extension; // renameing image
