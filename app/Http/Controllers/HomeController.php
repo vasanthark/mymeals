@@ -74,7 +74,7 @@ class HomeController extends Controller
                     'meal_name'=> $days->meal->title,
                     'meal_image'=> $days->meal->meal_image,
                     'meal_date'=> date('Y-m-d', strtotime($day)),
-                    'items' => $days->meal->item()->lists("items.name")->toArray(),
+                    'items' => implode(", ",$days->meal->item()->lists("items.name")->toArray()),
                     'price'=> $days->price,
                 ];
             }  else {
@@ -88,7 +88,7 @@ class HomeController extends Controller
                        'meal_image'=> $days->meal->meal_image,
                        'meal_name'=> $days->meal->title,
                        'meal_date'=> date('Y-m-d', strtotime("+".$i." day")),
-                       'items' => $days->meal->item()->lists("items.name")->toArray(),
+                       'items' => implode(", ",$days->meal->item()->lists("items.name")->toArray()),
                        'price'=> $days->price,
                    ];
                 }
