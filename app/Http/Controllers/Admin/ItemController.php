@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Item;
+use App\ItemType;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Session;
+use Input;
 use Validator;
 use DB;
 
@@ -28,7 +30,9 @@ class ItemController extends Controller {
      * @return Response
      */  
     public function create() {
-        return view('admin.item.create');
+        $itemtypes = ItemType::getItemTypes();
+        $itemtypes->prepend('--Select Item Type--', '');
+        return view('admin.item.create', compact('itemtypes'));
     }
     /**
      * Store a newly created resource in storage.
@@ -38,12 +42,32 @@ class ItemController extends Controller {
      */
     public function store(Request $request) {
         $data = $request->all();
-        $validator = Validator::make($data, Item::rules());
+        
+        $messages = [
+            'item_type_id.required' => 'Item Type required.',
+            'name.required' => 'Item name required.',
+            'item_image.required' => 'Item image required.',
+        ];  
+         
+        $validator = Validator::make($data, Item::rules(),$messages);
         if ($validator->fails()) {
             return redirect()->back()->withInput()->withErrors($validator->errors());
         }
+        
+        if (Input::file())
+        {     
+            $image_obj = Input::file('item_image');
+            $destinationPath = public_path() . '/uploads/items/'; // upload path
+            $extension = $image_obj->getClientOriginalExtension(); // getting image extension
+            $fileName  = rand(11111, 99999) . time() . '.' . $extension; // renameing image
+            $image_obj->move($destinationPath, $fileName); // uploading file to given path
+            
+        }
+        
         $adsmodel = new Item;
         $adsmodel->name = $data['name'];
+        $adsmodel->item_image = $fileName;
+        $adsmodel->item_type_id = $data['item_type_id'];
         $adsmodel->save();
         
         Session::flash('flash_message', 'Item created successfully!');
@@ -67,8 +91,13 @@ class ItemController extends Controller {
      * @return Response
      */
     public function edit($id) {
+        
+        $itemtypes = ItemType::getItemTypes();
+        $itemtypes->prepend('--Select Item Type--', '');
+        
         $item = Item::find($id);
-        return view('admin.item.edit', compact('item'));
+        $old_file = $item->item_image;
+        return view('admin.item.edit', compact('item','itemtypes','old_file'));
     }
 
     /**
@@ -81,12 +110,27 @@ class ItemController extends Controller {
     public function update(Request $request, $id) {
         $data = $request->except(['_method', '_token']);
         
-        $validator = Validator::make($data, Item::rules($id));
+        $messages = [
+            'item_type_id.required' => 'Item Type required.',
+            'name.required' => 'Item name required.',
+        ];  
+         
+        $validator = Validator::make($data, Item::rules($id),$messages);
         if ($validator->fails()) {
             return redirect()->back()->withInput()->withErrors($validator->errors());
         }
         
-        $item = Item::find($id);     
+         $item = Item::find($id);    
+        if (Input::file())
+        {     
+            $image_obj = Input::file('item_image');
+            $destinationPath = public_path() . '/uploads/items/'; // upload path
+            $extension = $image_obj->getClientOriginalExtension(); // getting image extension
+            $fileName  = rand(11111, 99999) . time() . '.' . $extension; // renameing image
+            $image_obj->move($destinationPath, $fileName); // uploading file to given path
+            $item->item_image = $fileName; 
+        }
+        
         $item->update($data);
         
         Session::flash('flash_message', 'item updated successfully!');

@@ -19,6 +19,7 @@
                                 <th>Name</th>
                                 <th>Meal Title</th>
                                 <th>Price</th>
+                                <th>Image</th>
                                 <th>Status</th>
                                 <th>Last Modified</th>
                                 <th>Action</th>
@@ -30,7 +31,12 @@
                                 <td>{{ ++$key }}</td>
                                 <td>{{ $dayinfo->name }}</td>
                                 <td>{{ ($dayinfo->meal_id>0)?$dayinfo->meal->title:"-" }}</td>     
-                                 <td>{{ $dayinfo->price }}</td>
+                                <td>{{ $dayinfo->price }}</td>
+                                <td style="text-align: center">
+                                    @if($dayinfo->day_image!=null)
+                                        {!! Html::image('uploads/days/'.$dayinfo->day_image, $dayinfo->name, array('width' => 50, 'height' => 50 ,'class' => 'thumb')) !!}
+                                    @endif
+                                </td>
                                 <td align="center">
                                     @if($dayinfo->status == 1)                               
                                         <i class="fa fa-circle text-green"></i>

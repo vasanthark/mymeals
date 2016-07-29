@@ -10,7 +10,8 @@ class Day extends Model {
 
     public static function rules($id = 0, $merge = []) {
         return array_merge([
-            'meal_id' => 'required',           
+            'meal_id' => 'required',     
+            'day_image' => 'required|Mimes:jpeg,png,gif',
             'price' => 'required|numeric',
                 ], $merge);
     }

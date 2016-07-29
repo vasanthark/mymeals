@@ -15,18 +15,18 @@
 @stop
 <!-- Main content -->
 <section class="content">
-    
+
     @include('admin.partials.errors')
-    <?php $existin_post = !empty(old('item_id'))?old('item_id'):array(); ?>
+    <?php $existin_post = !empty(old('item_id')) ? old('item_id') : array(); ?>
     <div class="row">
         <div class="col-md-12">
             <!-- general form elements -->
             <div class="box box-primary">
-                
+
                 <!-- form start -->
                 {!! Form::open(['class' => 'form-horizontal','role' => 'form','route'=>['admin.meals.store'],'files'=>'true']) !!}
                 <div class="box-body">    
-                  
+
                     <div class="form-group">
                         {!! Form::label('title', 'Title:*', ['class' => 'col-sm-2 control-label']) !!}
                         <div class="col-sm-5">
@@ -36,21 +36,15 @@
                     <div class="form-group">
                         {!! Form::label('item_id', 'Items:*', ['class' => 'col-sm-2 control-label']) !!}
                         <div class="col-sm-5">                            
-                            <select class="form-control selectpicker" multiple data-live-search="true" name="item_id[]">
-                                @foreach ($items as $key => $item)
-                                <option value="{{ $item->item_id }}" <?php if(in_array($item->item_id,$existin_post)){ echo 'selected="selected"';}?> data-tokens="{{ $item->name }}">{{ $item->name }}</option>
-                                @endforeach
-                            </select>
+                            {{ Form::select('item_id[]', $items, null ,array('class'=>'form-control selectpicker',
+                                                                            'multiple'=>'multiple',
+                                                                            'data-live-search'=>'true')
+                                                                            )
+                            }}
                         </div>
-                    </div>
+                    </div>                 
                     <div class="form-group">
-                        {!! Form::label('meal_image', 'Meals Image:*', ['class' => 'col-sm-2 control-label']) !!}
-                        <div class="col-sm-5">
-                            {!! Form::file('meal_image') !!}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                            {!! Form::label('status', 'Status:', ['class' => 'col-sm-2 control-label']) !!}
+                        {!! Form::label('status', 'Status:', ['class' => 'col-sm-2 control-label']) !!}
                         <div class="col-sm-5">
                             {!! Form::radio('status', '1', true) !!} Enable
                             {!! Form::radio('status', '0', null) !!} Disable
@@ -58,14 +52,14 @@
                     </div> 
                 </div>
 
-                    <div class="box-footer">
-                        <div class="col-sm-0 col-sm-offset-2">
-                            {!! Form::submit('Submit', ['class' => 'btn btn-primary']) !!}
-                            <a href="{{ URL::to('/admin/meals') }}" class="btn btn-info">
-                                Back
-                            </a>
-                        </div>
+                <div class="box-footer">
+                    <div class="col-sm-0 col-sm-offset-2">
+                        {!! Form::submit('Submit', ['class' => 'btn btn-primary']) !!}
+                        <a href="{{ URL::to('/admin/meals') }}" class="btn btn-info">
+                            Back
+                        </a>
                     </div>
+                </div>
                 {!! Form::close() !!}
             </div><!-- /.box -->
         </div>

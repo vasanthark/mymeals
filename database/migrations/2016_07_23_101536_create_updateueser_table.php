@@ -11,11 +11,11 @@ class CreateUpdateueserTable extends Migration
      * @return void
      */
      public function up() {
-         Schema::table('users', function($table)
-        {
-            $table->dropUnique('users_username_unique');
-            $table->dropUnique('users_email_unique');
-        });
+//         Schema::table('users', function($table)
+//        {
+//            $table->dropUnique('users_username_unique');
+//            $table->dropUnique('users_email_unique');
+//        });
     }
 
     /**

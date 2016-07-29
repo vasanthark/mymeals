@@ -24,7 +24,7 @@
             <div class="box box-primary">
                 
                 <!-- form start -->
-                {!! Form::model($day, ['class' => 'form-horizontal','method' => 'PATCH', 'role' => 'form','route'=>['admin.days.update',$day->day_id]]) !!}
+                {!! Form::model($day, ['class' => 'form-horizontal','method' => 'PATCH','files'=>'true', 'role' => 'form','route'=>['admin.days.update',$day->day_id]]) !!}
                 <div class="box-body">   
                     <div class="form-group">
                         {!! Form::label('title', 'Day:', ['class' => 'col-sm-2 control-label']) !!}
@@ -53,6 +53,16 @@
                             {!! Form::text('price', null, ['placeholder' => 'Price', 'class' => 'form-control']) !!}
                         </div>
                     </div>  
+                    
+                     <div class="form-group">
+                        {!! Form::label('day_image', 'Day Image:', ['class' => 'col-sm-2 control-label']) !!}
+                        <div class="col-sm-5">
+                            {!! Form::file('day_image') !!}
+                            @if($old_file!=null)
+                                {!! Html::image('uploads/days/'.$old_file, 'Day', array('width' => 70, 'height' => 70 ,'class' => 'thumb')) !!}
+                            @endif
+                        </div>
+                    </div>
                     
                     <div class="form-group">
                             {!! Form::label('status', 'Status:', ['class' => 'col-sm-2 control-label']) !!}

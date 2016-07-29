@@ -34,7 +34,11 @@ class MealController extends Controller {
      * @return Response
      */  
     public function create() {
-        $items = Item::orderBy('name', 'asc')->get();
+        $items = array();
+        $items_rslt = Item::orderBy('item_type_id', 'asc')->get();
+        foreach ( $items_rslt as $infos ) {           
+            $items[$infos->itemType->type_name][$infos->item_id] = $infos->name;
+        }
         return view('admin.meal.create', compact('offer','items'));
     }
     /**
@@ -56,19 +60,8 @@ class MealController extends Controller {
             return redirect()->back()->withInput()->withErrors($validator->errors());
         }
         
-        if (Input::file())
-        {     
-            $image_obj = Input::file('meal_image');
-            $destinationPath = public_path() . '/uploads/meal/'; // upload path
-            $extension = $image_obj->getClientOriginalExtension(); // getting image extension
-            $fileName  = rand(11111, 99999) . time() . '.' . $extension; // renameing image
-            $image_obj->move($destinationPath, $fileName); // uploading file to given path
-            
-        }
-        
         $meal = new Meal;
-        $meal->title = $data['title'];
-        $meal->meal_image = $fileName;
+        $meal->title = $data['title'];      
         $meal->status = $data['status']; 
         $meal->save();
         $meal->item()->attach($data['item_id']);
@@ -96,14 +89,17 @@ class MealController extends Controller {
      */
     public function edit($id) {
         $mealsitems = array();
-        $meal  = Meal::find($id);
-        $old_file = $meal->meal_image;
+        $meal  = Meal::find($id);       
         // All items
-        $items = Item::orderBy('name', 'asc')->get();
+        $items_rslt = Item::orderBy('item_type_id', 'asc')->get();
+        foreach ( $items_rslt as $infos ) {           
+            $items[$infos->itemType->type_name][$infos->item_id] = $infos->name;
+        }
+        
         // Existing items
         $mealsitems = $meal->item()->lists("items.item_id")->toArray();
         
-        return view('admin.meal.edit', compact('meal','mealsitems','items','old_file'));
+        return view('admin.meal.edit', compact('meal','mealsitems','items'));
     }
 
     /**
@@ -115,39 +111,14 @@ class MealController extends Controller {
      */
     public function update(Request $request, $id) {
         $data = $request->except(['_method', '_token']);
-       
-        $fileName = '';
-        if(Input::file()){
-            $this->validate($request, [
-                'title' => 'required', 
-                'meal_image' => 'Mimes:jpeg,png,gif',
-                'item_id' => 'required',
-            ]);
-        }else{
-            $this->validate($request, [
-                'title' => 'required', 
-                'item_id' => 'required',
-            ]);
-        }
-//        $validator = Validator::make($data, Meal::rules($id));
-//        if ($validator->fails()) {
-//            return redirect()->back()->withInput()->withErrors($validator->errors());
-//        }
-        $meal = Meal::find($id);
-         if (Input::file())
-        {     
-            $image_obj = Input::file('meal_image');
-            $destinationPath = public_path() . '/uploads/meal/'; // upload path
-            $extension = $image_obj->getClientOriginalExtension(); // getting image extension
-            $fileName  = rand(11111, 99999) . time() . '.' . $extension; // renameing image
-            $image_obj->move($destinationPath, $fileName); // uploading file to given path
-            
-        }else{
-            $fileName = $data['meal_image'];
+     
+        $validator = Validator::make($data, Meal::rules($id));
+        if ($validator->fails()) {
+            return redirect()->back()->withInput()->withErrors($validator->errors());
         }
         
+        $meal = Meal::find($id);
         $meal->title = $data['title'];
-        $meal->meal_image = $fileName;
         $meal->status = $data['status'];  
         $meal->item()->sync($data['item_id']);        
         $meal->save();   

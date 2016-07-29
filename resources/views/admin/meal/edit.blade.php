@@ -15,14 +15,14 @@
 @stop
 <!-- Main content -->
 <section class="content">
-    
+
     @include('admin.partials.errors')
-    
+
     <div class="row">
         <div class="col-md-12">
             <!-- general form elements -->
             <div class="box box-primary">
-                
+
                 <!-- form start -->
                 {!! Form::model($meal, ['class' => 'form-horizontal','method' => 'PATCH','files'=>'true', 'role' => 'form','route'=>['admin.meals.update',$meal->meal_id]]) !!}
                 <div class="box-body">   
@@ -32,33 +32,20 @@
                             {!! Form::text('title', null, ['placeholder' => 'Title', 'class' => 'form-control']) !!}
                         </div>
                     </div>
+
                     <div class="form-group">
                         {!! Form::label('item_id', 'Items:*', ['class' => 'col-sm-2 control-label']) !!}
-                        
-                        <div class="col-sm-5">   
-                            <select class="form-control selectpicker" multiple data-live-search="true" name="item_id[]">
-                                @foreach ($items as $key => $item)
-                                    @if (in_array($item->item_id,$mealsitems))
-                                        <option value="{{ $item->item_id }}" data-tokens="{{ $item->name }}" selected>{{ $item->name }}</option>
-                                    @else
-                                        <option value="{{ $item->item_id }}" data-tokens="{{ $item->name }}">{{ $item->name }}</option>
-                                    @endif
-                                @endforeach
-                            </select>
+                        <div class="col-sm-5">                            
+                            {{ Form::select('item_id[]', $items, $mealsitems ,array('class'=>'form-control selectpicker',
+                                                                            'multiple'=>'multiple',
+                                                                            'data-live-search'=>'true')
+                                                                            )
+                            }}
                         </div>
-                    </div>
+                    </div>         
+
                     <div class="form-group">
-                        {!! Form::label('meal_image', 'Meal Image:*', ['class' => 'col-sm-2 control-label']) !!}
-                        <div class="col-sm-5">
-                            {!! Form::file('meal_image') !!}
-                            @if($old_file!=null)
-                                {!! Form::hidden('meal_image', $old_file) !!} 
-                                {!! Html::image('uploads/meal/'.$old_file, 'Meal', array('width' => 70, 'height' => 70 ,'class' => 'thumb')) !!}
-                                @endif
-                        </div>
-                    </div>
-                    <div class="form-group">
-                            {!! Form::label('status', 'Status:', ['class' => 'col-sm-2 control-label']) !!}
+                        {!! Form::label('status', 'Status:', ['class' => 'col-sm-2 control-label']) !!}
                         <div class="col-sm-5">
                             {!! Form::radio('status', '1', true) !!} Enable
                             {!! Form::radio('status', '0', null) !!} Disable
@@ -66,14 +53,14 @@
                     </div> 
                 </div>
 
-                    <div class="box-footer">
-                        <div class="col-sm-0 col-sm-offset-2">
-                            {!! Form::submit('Update', ['class' => 'btn btn-primary']) !!}
-                            <a href="{{ URL::to('/admin/meals') }}" class="btn btn-info">
-                                Back
-                            </a>
-                        </div>
+                <div class="box-footer">
+                    <div class="col-sm-0 col-sm-offset-2">
+                        {!! Form::submit('Update', ['class' => 'btn btn-primary']) !!}
+                        <a href="{{ URL::to('/admin/meals') }}" class="btn btn-info">
+                            Back
+                        </a>
                     </div>
+                </div>
                 {!! Form::close() !!}
             </div><!-- /.box -->
         </div>

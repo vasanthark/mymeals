@@ -39,7 +39,9 @@ $(function () {
                         <thead>
                             <tr>
                                 <th>S.No</th>
-                                <th>Name</th>      
+                                <th>Name</th>    
+                                <th>Item Type</th>  
+                                <th>Item Image</th>   
                                 <th>Last Modified</th>
                                 <th>Action</th>
                             </tr>
@@ -49,6 +51,12 @@ $(function () {
                             <tr>
                                 <td>{{ ++$key }}</td>
                                 <td>{{ $item->name }}</td>
+                                <td>{{ $item->itemType->type_name }}</td>
+                                <td style="text-align: center">
+                                    @if($item->item_image!=null)
+                                        {!! Html::image('uploads/items/'.$item->item_image, $item->name, array('width' => 50, 'height' => 50 ,'class' => 'thumb')) !!}
+                                    @endif
+                                </td>
                                 <td>{{ $item->updated_at }}</td>
                                 <td align="center">
                                     <a href="{{route('admin.items.edit',$item->item_id)}}" >

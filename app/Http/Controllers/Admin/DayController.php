@@ -9,6 +9,7 @@ use App\Day;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Session;
+use Input;
 use Validator;
 use DB;
 
@@ -33,6 +34,7 @@ class DayController extends Controller {
      */
     public function edit($id) {
         $day   = Day::find($id);
+        $old_file = $day->day_image;
         
         $meal  = Meal::getMeal(); 
         $meal->prepend('--Select Meal--', '');
@@ -40,7 +42,7 @@ class DayController extends Controller {
         $offers  = Offer::getOffer(); 
         
         
-        return view('admin.day.edit', compact('day','meal','offers'));
+        return view('admin.day.edit', compact('day','meal','offers','old_file'));
     }
 
     /**
@@ -56,15 +58,33 @@ class DayController extends Controller {
         $messages = [
             'meal_id.required' => 'Please select meal.',
         ]; 
-        $validator = Validator::make($data, Day::rules($id),$messages);
-        if ($validator->fails()) {
-            return redirect()->back()->withInput()->withErrors($validator->errors());
+        
+        if(Input::file()){
+            $this->validate($request, [
+                'day_image' => 'Mimes:jpeg,png,gif',
+                'meal_id' => 'required',
+            ],$messages);
+        }else{
+            $this->validate($request, [
+                'meal_id' => 'required',
+            ],$messages);
         }
         
         $day = Day::find($id);           
         $day->meal_id  = $data['meal_id'];
         $day->offer_id = $data['offer_id'];  
         $day->price    = $data['price'];
+        
+        if (Input::file())
+        {     
+            $image_obj = Input::file('day_image');
+            $destinationPath = public_path() . '/uploads/days/'; // upload path
+            $extension = $image_obj->getClientOriginalExtension(); // getting image extension
+            $fileName  = rand(11111, 99999) . time() . '.' . $extension; // renameing image
+            $image_obj->move($destinationPath, $fileName); // uploading file to given path   
+            $day->day_image   = $fileName;
+        }
+ 
         $day->save();   
         
         Session::flash('flash_message', 'Infos updated successfully!');
