@@ -66,43 +66,77 @@ class HomeController extends Controller
             $response = array();     
             $i = 0;
             if($day != 'null'){
+                $items_list = array();
+                $days_img = array();
+                
                 $days = Day::where('name','=',$day)->orderBy('day_id', 'asc')->first();
+                $item_ids = $days->meal->item()->orderBy('item_type_id', 'asc')->lists("items.item_id");
+                $j=0;
+                for($i=0;$i<7;$i++){
+                   $select_day = date('l', strtotime("+".$i." day"));
+                   $dayimage = Day::where('name','=',$select_day)->orderBy('day_id', 'asc')->first();
+                   $days_img[$i]['image'] = $dayimage->day_image;
+                }
+                foreach($item_ids as $item_id){
+                    $item = Item::find($item_id);
+                    $items_list[$j]['name']=$item->name;
+                    $items_list[$j]['image']=$item->item_image;
+                    $items_list[$j]['type_id']=$item->item_type_id;
+                    $items_list[$j]['type_name']=$item->itemType->type_name;
+                    
+//                    $items_list[$item->itemType->type_name][$i]['name'] = $item->name;
+//                    $items_list[$item->itemType->type_name][$i]['image'] = $item->item_image;
+                    ++$j;
+                 }
+                 
                  $response[$days->name][] = [
                     'day_id'  => $days->day_id,
                     'day'  => $days->name,    
+                    'day_image' => $days_img,
                     'meal_id' => $days->meal_id, 
                     'meal_name'=> $days->meal->title,
                     'meal_image'=> $days->meal->meal_image,
                     'meal_date'=> date('Y-m-d', strtotime($day)),
-                    'items' => implode(", ",$days->meal->item()->lists("items.name")->toArray()),
+                     'items' => $items_list,
+//                    'items' => implode(", ",$days->meal->item()->lists("items.name")->toArray()),
                     'price'=> $days->price,
                 ];
             }  else {
+                $items_list = array();
                 for($i=0;$i<7;$i++){
                     $day = date('l', strtotime("+".$i." day"));
                  $days = Day::where('name','=',$day)->orderBy('day_id', 'asc')->first();
+                 $item_ids = $days->meal->item()->orderBy('item_type_id', 'asc')->lists("items.item_id");
+                  $j=0;
+                 foreach($item_ids as $item_id){
+                    $item = Item::find($item_id);
+                   $items_list[$j]['name']=$item->name;
+                    $items_list[$j]['image']=$item->item_image;
+                    $items_list[$j]['type_id']=$item->item_type_id;
+                    $items_list[$j]['type_name']=$item->itemType->type_name;
+                    ++$j;
+                 }
                     $response[$days->name][] = [
                        'day_id'  => $days->day_id,
                        'day'  => $days->name,    
+                       'day_image' => $days->day_image,
                        'meal_id' => $days->meal_id, 
                        'meal_image'=> $days->meal->meal_image,
                        'meal_name'=> $days->meal->title,
-                       'meal_date'=> date('Y-m-d', strtotime("+".$i." day")),
-                       'items' => implode(", ",$days->meal->item()->lists("items.name")->toArray()),
+                       'meal_date'=> date('Y-m-d', strtotime("+".$j." day")),
+                       'items' => $items_list,
                        'price'=> $days->price,
                    ];
                 }
             }
-            
         }catch (Exception $e){
             $statusCode = 400;
         }finally{          
             return response()->json([$response, $statusCode]);
         }   
     } 
-    public function oreder($userid, $dayid, $mealid, $mealdate){
-            $today = date('Y-m-d').' 00:00:00';
-            
+    public function order($userid, $dayid, $mealid, $mealdate){
+            $today = date('Y-m-d');
         try{            
             $statusCode = 200;
             
@@ -112,7 +146,7 @@ class HomeController extends Controller
                             ->where('day_id','=',$dayid)
                             ->where('meal_id','=',$mealid)
                             ->where('meal_date','=',$mealdate)                            
-                            ->where('updated_at','>',$today)
+//                            ->where('updated_at','>',$today)                            
                             ->first();
                 if($check_old){
                     $check_old->user_id = $userid;
@@ -125,36 +159,32 @@ class HomeController extends Controller
                     $check_old->grandtotal = $day->price;
                     $check_old->save();
                 }else{
-                    $temporeder = new TempOrder;
-                    $temporeder->user_id = $userid;
-                    $temporeder->day_id = $dayid;
-                    $temporeder->meal_id  = $mealid;
-                    $temporeder->meal_date  = $mealdate;
-                    $temporeder->qty  = 1;
-                    $temporeder->subtotal = $day->price;
-                    $temporeder->offer_price = 0;
-                    $temporeder->grandtotal = $day->price;
-                    $temporeder->save();
+                    $temporeder_new = new TempOrder;
+                    $temporeder_new->user_id = $userid;
+                    $temporeder_new->day_id = $dayid;
+                    $temporeder_new->meal_id  = $mealid;
+                    $temporeder_new->meal_date  = $mealdate;
+                    $temporeder_new->qty  = 1;
+                    $temporeder_new->subtotal = $day->price;
+                    $temporeder_new->offer_price = 0;
+                    $temporeder_new->grandtotal = $day->price;
+                    $temporeder_new->save();
                 }
             }
-            
-            $temporeders = TempOrder::where('user_id','=',$userid)->where('updated_at','>',$today)->orderBy('temporder_id', 'asc')->get();            
+            $total_cost = 0;
+            $discount = 0;
+            $total_payable = 0;
+            $temporeders = TempOrder::where('user_id','=',$userid)->where('meal_date','>=',$today)->orderBy('temporder_id', 'asc')->get();            
             if($temporeders->isEmpty()){
-                $response[] = [
-                    'user_id'  => $userid, 
-                    'day_id' => $dayid,
-                    'meal_id' => $mealid,
-                    'meal_name' => '',
-                    'meal_date' => $mealdate,
-                    'qty' => '0',
-                    'subtotal' => '0',
-                    'offer_price' => '0',
-                    'grandtotal' => '0',
-                    
-                ]; 
+                $response = [
+                       'message'  => 'wrong',  
+                    ];
             }else{
+                $response = [
+                       'message'  => 'success',  
+                    ];
                 foreach ($temporeders as $oreder){
-                    $response[$oreder->temporder_id] = [
+                    $response['cart_page'][] = [
                         'user_id'  => $oreder->user_id, 
                         'day_id' => $oreder->day_id,
                         'meal_id' => $oreder->meal_id,
@@ -165,8 +195,18 @@ class HomeController extends Controller
                         'offer_price' => $oreder->offer_price,
                         'grandtotal' => $oreder->grandtotal,
                     ];
+                    $total_cost += $oreder->grandtotal;
+                    $discount += $oreder->offer_price;
+                    
                 }
+                $total_payable = $total_cost + $discount;
+                $response['cart_total'][]= [
+                    'total_cost' => $total_cost,
+                    'discount' => $discount,
+                    'total_payable' => $total_payable,
+                ];
             }
+            
                          
         }catch (Exception $e){
             $statusCode = 400;
@@ -179,18 +219,52 @@ class HomeController extends Controller
         try{            
             $statusCode = 200;
             
-            $today = date('Y-m-d').' 00:00:00';
+            $today = date('Y-m-d');
             $temporeders = TempOrder::where('user_id','=',$userid)
                             ->where('day_id','=',$dayid)
                             ->where('meal_id','=',$mealid)
                             ->where('meal_date','=',$mealdate)                            
-                            ->where('updated_at','>',$today)
+//                            ->where('updated_at','>',$today)
                             ->first();
-            
-            if($temporeders->delete()){
-                $response = [
-                    'message'  => 'success',   
-                ]; 
+
+            if($temporeders){
+                $temporeders->delete();
+                $total_cost = 0;
+                $discount = 0;
+                $total_payable = 0;
+                $temporeders_new = TempOrder::where('user_id','=',$userid)->where('meal_date','>=',$today)->orderBy('temporder_id', 'asc')->get();            
+                if($temporeders_new->isEmpty()){
+                    $response = [
+                           'message'  => 'wrong',  
+                        ];
+                }else{
+                    $response = [
+                       'message'  => 'success',  
+                    ];
+                    foreach ($temporeders_new as $oreder){
+                        $response['cart_page'][] = [
+                            'user_id'  => $oreder->user_id, 
+                            'day_id' => $oreder->day_id,
+                            'meal_id' => $oreder->meal_id,
+                            'meal_name' => $oreder->meal->title,
+                            'meal_date' => $oreder->meal_date,
+                            'qty' => $oreder->qty,
+                            'subtotal' => $oreder->subtotal,
+                            'offer_price' => $oreder->offer_price,
+                            'grandtotal' => $oreder->grandtotal,
+                        ];
+                        $total_cost += $oreder->grandtotal;
+                        $discount += $oreder->offer_price;
+
+                    }
+                    $total_payable = $total_cost + $discount;
+                    $response['cart_total'][]= [
+                        'total_cost' => $total_cost,
+                        'discount' => $discount,
+                        'total_payable' => $total_payable,
+                    ];
+                }
+                
             }else{
                 $response = [
                     'message'  => 'wrong',   
@@ -204,35 +278,57 @@ class HomeController extends Controller
     }
     
      public function updateqty($userid, $dayid, $mealid, $mealdate, $qty, $subtotal){
-//        $data = array();
-//        $data['userid'] =  ($userid != 'null')? $userid : '';
-//        $data['dayid'] = ($dayid != 'null')? $dayid : '';
-//        $data['mealid'] = ($mealid != 'null')? $mealid : '';
-//        $data['mealdate'] = ($mealdate != 'null')? $mealdate : '';
          
         try{            
             $statusCode = 200;
             
-            $today = date('Y-m-d').' 00:00:00';
+            $today = date('Y-m-d');
             $temporeders = TempOrder::where('user_id','=',$userid)
                             ->where('day_id','=',$dayid)
                             ->where('meal_id','=',$mealid)
                             ->where('meal_date','=',$mealdate)                            
-                            ->where('updated_at','>',$today)
+//                            ->where('updated_at','>',$today)
                             ->first();
             
             if($temporeders){
                 $temporeders->qty = $qty;
                 $temporeders->grandtotal = $subtotal * $qty;
                 $temporeders->save();
-                    $response[$temporeders->temporder_id] = [
+                    $response = [
                        'message'  => 'success',  
                     ];
+                $total_cost = 0;
+                $discount = 0;
+                $total_payable = 0;
+                $temporeders_new = TempOrder::where('user_id','=',$userid)->where('meal_date','>=',$today)->orderBy('temporder_id', 'asc')->get();            
                 
+                    foreach ($temporeders_new as $oreder){
+                        $response['cart_page'][] = [
+                            'user_id'  => $oreder->user_id, 
+                            'day_id' => $oreder->day_id,
+                            'meal_id' => $oreder->meal_id,
+                            'meal_name' => $oreder->meal->title,
+                            'meal_date' => $oreder->meal_date,
+                            'qty' => $oreder->qty,
+                            'subtotal' => $oreder->subtotal,
+                            'offer_price' => $oreder->offer_price,
+                            'grandtotal' => $oreder->grandtotal,
+                        ];
+                        $total_cost += $oreder->grandtotal;
+                        $discount += $oreder->offer_price;
+
+                    }
+                $total_payable = $total_cost + $discount;
+                $response['cart_total'][]= [
+                    'total_cost' => $total_cost,
+                    'discount' => $discount,
+                    'total_payable' => $total_payable,
+                ];
             }else{
                 $response = [
-                     'message'  => 'wrong',   
-                ]; 
+                       'message'  => 'wrong',  
+                    ];
+                
             }
                          
         }catch (Exception $e){
@@ -247,13 +343,13 @@ class HomeController extends Controller
         try{            
             $statusCode = 200;
             
-            $today = date('Y-m-d').' 00:00:00';
+            $today = date('Y-m-d');
             $temporeders = TempOrder::where('user_id','=',$userid)
-                            ->where('updated_at','>',$today)
+                            ->where('meal_date','>=',$today)
                             ->get();
             
             if($temporeders->isEmpty()){
-                $response[$userid] = [
+                $response = [
                     'message'  => 'wrong',
                 ]; 
             }else{
@@ -277,7 +373,7 @@ class HomeController extends Controller
                 $order->save();
                 $temp->delete();
                 }
-                $response[$userid] = [
+                $response = [
                         'message'  => 'success',  
                     ];
             }
